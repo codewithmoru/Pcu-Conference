@@ -36,3 +36,389 @@ a{text-decoration:none;color:inherit}.container{width:min(1160px,92%);margin:aut
 @media(max-width:1000px){.nav{gap:0}.nav a{font-size:11px;padding:8px 6px}.cards-4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.menu-toggle{display:block}.nav{display:none;position:absolute;top:78px;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 4%;box-shadow:0 12px 20px rgba(0,0,0,.08);flex-direction:column;align-items:stretch}.nav.open{display:flex}.nav a{padding:12px}.topbar-inner{font-size:10px;gap:15px}.brand-subtitle{display:none}.hero{min-height:650px}.event-meta{flex-direction:column;gap:14px}.event-meta>div{border-left:0;border-top:1px solid rgba(255,255,255,.22);padding:12px 0 0}.event-meta>div:first-child{border-top:0;padding-top:0}.two-col,.contact-grid{grid-template-columns:1fr;gap:35px}.theme-grid,.speaker-grid,.committee-grid{grid-template-columns:1fr 1fr}.registration-wrap{flex-direction:column;align-items:flex-start}.facts-grid{grid-template-columns:1fr 1fr}.facts-grid div:nth-child(2){border-right:0}.facts-grid div{border-bottom:1px solid var(--border)}.hero-tech{right:20px;bottom:18px}}
 @media(max-width:560px){.cards-4,.theme-grid,.speaker-grid,.committee-grid{grid-template-columns:1fr}.hero h1{font-size:40px;letter-spacing:-1px}.hero-lead{font-size:14px}.section{padding:65px 0}.footer-inner{flex-direction:column}.brand-title{font-size:17px}.hero-tech{font-size:7px}}
+
+/* =========================================================
+   IEEE NEXUS–2K26
+   SOFT TECHNICAL SECTION BACKGROUNDS
+   Add this at the END of style.css
+   ========================================================= */
+
+/* ---------- GLOBAL SOFT TECH PALETTE ---------- */
+
+:root {
+  --soft-blue: #f2f7ff;
+  --soft-blue-2: #f7f9fc;
+  --soft-cyan: #f3fafb;
+  --soft-violet: #faf9ff;
+  --soft-gray: #fafbfd;
+  --soft-contact: #f3f7fc;
+
+  --tech-blue: #4f7cff;
+  --tech-cyan: #5edee8;
+  --tech-violet: #9b8cff;
+  --tech-navy: #0b1220;
+}
+
+
+/* =========================================================
+   ABOUT SECTION
+   Very light blue-gray
+   ========================================================= */
+
+#about {
+  background: #f7f9fc;
+}
+
+#about .section-tag {
+  color: #4f7cdd;
+}
+
+
+/* =========================================================
+   OBJECTIVES SECTION
+   Soft technical blue
+   ========================================================= */
+
+.section-light {
+  background: #f2f7ff;
+}
+
+
+/* =========================================================
+   CONFERENCE TRACKS
+   Very subtle violet/blue technical tint
+   ========================================================= */
+
+#themes {
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(155, 140, 255, 0.07),
+      transparent 25%
+    ),
+    #faf9ff;
+}
+
+#themes .section-tag {
+  color: #7467c8;
+}
+
+
+/* =========================================================
+   SPEAKERS
+   Keep this one dark because it creates visual contrast
+   ========================================================= */
+
+#speakers {
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(94, 221, 232, 0.08),
+      transparent 25%
+    ),
+    linear-gradient(
+      135deg,
+      #0c1526,
+      #14223b
+    );
+}
+
+
+/* =========================================================
+   IMPORTANT DATES
+   Soft cyan background
+   ========================================================= */
+
+#dates {
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(94, 221, 232, 0.08),
+      transparent 22%
+    ),
+    #f4fafa;
+}
+
+#dates .section-tag {
+  color: #3b9ca8;
+}
+
+#dates .timeline {
+  border-left-color: #d5e8ea;
+}
+
+#dates .timeline-item:before {
+  border-color: #58b9c4;
+}
+
+#dates .timeline-item .date {
+  color: #3b9ca8;
+}
+
+
+/* Highlighted important date */
+
+#dates .timeline-item.highlight {
+  background: #eaf8fa;
+  border: 1px solid #d8eff1;
+}
+
+
+/* =========================================================
+   SUBMISSION
+   Very soft neutral background
+   ========================================================= */
+
+#submission {
+  background: #f8f9fc;
+}
+
+#submission .section-tag {
+  color: #536fae;
+}
+
+
+/* =========================================================
+   REGISTRATION
+   Soft blue + violet gradient
+   Instead of a strong dark CTA
+   ========================================================= */
+
+#registration {
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(94, 221, 232, 0.12),
+      transparent 25%
+    ),
+    linear-gradient(
+      115deg,
+      #eaf2ff 0%,
+      #eef5ff 45%,
+      #f4f2ff 100%
+    );
+
+  color: #182235;
+
+  border-top: 1px solid #e0e8f5;
+  border-bottom: 1px solid #e0e8f5;
+}
+
+#registration h2 {
+  color: #16243c;
+}
+
+#registration p {
+  color: #5d6c83;
+}
+
+#registration .section-tag {
+  color: #4f7cdd;
+}
+
+
+/* Registration button */
+
+#registration .btn-white {
+  background: #4f7cff;
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 20px rgba(79, 124, 255, 0.18);
+}
+
+#registration .registration-action small {
+  color: #718099;
+}
+
+
+/* =========================================================
+   COMMITTEE
+   Soft neutral-gray
+   ========================================================= */
+
+#committee {
+  background: #fafbfd;
+}
+
+#committee .section-tag {
+  color: #5271b6;
+}
+
+
+/* =========================================================
+   CONTACT
+   Soft blue-gray
+   ========================================================= */
+
+#contact {
+  background:
+    radial-gradient(
+      circle at 10% 80%,
+      rgba(79, 124, 255, 0.06),
+      transparent 25%
+    ),
+    #f3f7fc;
+}
+
+#contact .section-tag {
+  color: #4f7cdd;
+}
+
+
+/* =========================================================
+   CARDS
+   Keep cards almost white so they stand out gently
+   ========================================================= */
+
+.info-card,
+.theme-card,
+.committee-card,
+.submission-box {
+  background: rgba(255, 255, 255, 0.92);
+
+  border: 1px solid #e2e8f2;
+
+  box-shadow:
+    0 6px 24px rgba(37, 60, 100, 0.035);
+}
+
+
+/* Card hover */
+
+.info-card:hover,
+.theme-card:hover {
+  border-color: #cbd9f4;
+
+  box-shadow:
+    0 14px 32px rgba(49, 89, 201, 0.08);
+}
+
+
+/* =========================================================
+   QUICK FACTS
+   Clean white separation
+   ========================================================= */
+
+.quick-facts {
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   HERO
+   Soft technical navy instead of strong red
+   ========================================================= */
+
+.hero {
+  background:
+    radial-gradient(
+      circle at 78% 25%,
+      rgba(94, 221, 232, 0.12),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 65% 82%,
+      rgba(155, 140, 255, 0.10),
+      transparent 30%
+    ),
+    linear-gradient(
+      120deg,
+      #07101f 0%,
+      #0e1b31 50%,
+      #182a52 100%
+    );
+}
+
+
+/* Hero heading */
+
+.hero h1 span {
+  color: #b9c8ff;
+}
+
+
+/* Hero small technology line */
+
+.hero-tech {
+  color: rgba(201, 222, 255, 0.52);
+}
+
+
+/* =========================================================
+   FOOTER
+   Deep technical navy
+   ========================================================= */
+
+.footer {
+  background: #0a111e;
+}
+
+
+/* =========================================================
+   SPEAKER CARDS
+   Soft glass effect
+   ========================================================= */
+
+.speaker-card {
+  background: rgba(255, 255, 255, 0.045);
+
+  border:
+    1px solid rgba(155, 188, 235, 0.16);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   SPEAKER PHOTO
+   Blue/Cyan technical gradient
+   ========================================================= */
+
+.speaker-photo {
+  background:
+    linear-gradient(
+      135deg,
+      #4f7cff,
+      #5edee8
+    );
+
+  color: #07101f;
+}
+
+
+/* =========================================================
+   BUTTONS
+   Soft technical blue
+   ========================================================= */
+
+.btn-primary {
+  background:
+    linear-gradient(
+      135deg,
+      #4f7cff,
+      #6c8cff
+    );
+
+  box-shadow:
+    0 8px 20px rgba(79, 124, 255, 0.18);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  #registration {
+    background:
+      linear-gradient(
+        135deg,
+        #edf4ff,
+        #f6f5ff
+      );
+  }
+
+}
