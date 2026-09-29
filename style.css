@@ -45,63 +45,7 @@ a{text-decoration:none;color:inherit}.container{width:min(1160px,92%);margin:aut
 
 /* ---------- GLOBAL SOFT TECH PALETTE ---------- */
 
-:root {
-  --soft-blue: #f2f7ff;
-  --soft-blue-2: #f7f9fc;
-  --soft-cyan: #f3fafb;
-  --soft-violet: #faf9ff;
-  --soft-gray: #fafbfd;
-  --soft-contact: #f3f7fc;
 
-  --tech-blue: #4f7cff;
-  --tech-cyan: #5edee8;
-  --tech-violet: #9b8cff;
-  --tech-navy: #0b1220;
-}
-
-
-/* =========================================================
-   ABOUT SECTION
-   Very light blue-gray
-   ========================================================= */
-
-#about {
-  background: #f7f9fc;
-}
-
-#about .section-tag {
-  color: #4f7cdd;
-}
-
-
-/* =========================================================
-   OBJECTIVES SECTION
-   Soft technical blue
-   ========================================================= */
-
-.section-light {
-  background: #f2f7ff;
-}
-
-
-/* =========================================================
-   CONFERENCE TRACKS
-   Very subtle violet/blue technical tint
-   ========================================================= */
-
-#themes {
-  background:
-    radial-gradient(
-      circle at 90% 10%,
-      rgba(155, 140, 255, 0.07),
-      transparent 25%
-    ),
-    #faf9ff;
-}
-
-#themes .section-tag {
-  color: #7467c8;
-}
 
 
 /* =========================================================
