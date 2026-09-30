@@ -37,3 +37,294 @@ a{text-decoration:none;color:inherit}.container{width:min(1160px,92%);margin:aut
 @media(max-width:800px){.menu-toggle{display:block}.nav{display:none;position:absolute;top:78px;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 4%;box-shadow:0 12px 20px rgba(0,0,0,.08);flex-direction:column;align-items:stretch}.nav.open{display:flex}.nav a{padding:12px}.topbar-inner{font-size:10px;gap:15px}.brand-subtitle{display:none}.hero{min-height:650px}.event-meta{flex-direction:column;gap:14px}.event-meta>div{border-left:0;border-top:1px solid rgba(255,255,255,.22);padding:12px 0 0}.event-meta>div:first-child{border-top:0;padding-top:0}.two-col,.contact-grid{grid-template-columns:1fr;gap:35px}.theme-grid,.speaker-grid,.committee-grid{grid-template-columns:1fr 1fr}.registration-wrap{flex-direction:column;align-items:flex-start}.facts-grid{grid-template-columns:1fr 1fr}.facts-grid div:nth-child(2){border-right:0}.facts-grid div{border-bottom:1px solid var(--border)}.hero-tech{right:20px;bottom:18px}}
 @media(max-width:560px){.cards-4,.theme-grid,.speaker-grid,.committee-grid{grid-template-columns:1fr}.hero h1{font-size:40px;letter-spacing:-1px}.hero-lead{font-size:14px}.section{padding:65px 0}.footer-inner{flex-direction:column}.brand-title{font-size:17px}.hero-tech{font-size:7px}}
 
+/* =========================================================
+   CONFERENCE COMMITTEE - PROFESSIONAL PROFILE CARDS
+   ========================================================= */
+
+.committee-section {
+    background: #fafbfd;
+    padding: 90px 0;
+}
+
+.committee-section .section-heading {
+    max-width: 760px;
+    margin: 0 auto 55px;
+}
+
+.committee-section .section-heading.center {
+    text-align: center;
+}
+
+.committee-section .section-heading h2 {
+    margin-top: 12px;
+    margin-bottom: 15px;
+}
+
+.committee-section .section-heading h2 span {
+    color: #4f7cff;
+}
+
+.committee-section .section-heading p {
+    color: #65738b;
+    line-height: 1.7;
+}
+
+
+/* ---------- GRID ---------- */
+
+.committee-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    align-items: stretch;
+}
+
+
+/* ---------- PROFILE CARD ---------- */
+
+.committee-profile {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e2e8f2;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(37, 60, 100, 0.06);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.committee-profile:hover {
+    transform: translateY(-10px);
+    border-color: #cbd9f4;
+    box-shadow: 0 20px 45px rgba(49, 89, 201, 0.14);
+}
+
+
+/* ---------- IMAGE ---------- */
+
+.profile-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #eaf2ff,
+            #f4f2ff
+        );
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+
+    transition:
+        transform 0.5s ease,
+        filter 0.5s ease;
+}
+
+.committee-profile:hover .profile-image {
+    transform: scale(1.06);
+}
+
+
+/* ---------- IMAGE OVERLAY ---------- */
+
+.profile-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 35px 15px 15px;
+
+    background: linear-gradient(
+        to top,
+        rgba(7, 16, 31, 0.82),
+        rgba(7, 16, 31, 0)
+    );
+
+    opacity: 0;
+    transform: translateY(10px);
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+.committee-profile:hover .profile-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ---------- SOCIAL ICONS ---------- */
+
+.profile-overlay a {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+    color: #3159c9;
+
+    text-decoration: none;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.profile-overlay a:hover {
+    background: #4f7cff;
+    color: #ffffff;
+    transform: translateY(-3px);
+}
+
+
+/* ---------- PROFILE CONTENT ---------- */
+
+.profile-content {
+    padding: 25px 23px 28px;
+    text-align: center;
+}
+
+.profile-role {
+    display: inline-block;
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+
+    color: #4f7cff;
+
+    background: #eef4ff;
+
+    padding: 7px 11px;
+    border-radius: 30px;
+
+    margin-bottom: 14px;
+}
+
+.profile-content h3 {
+    margin: 0 0 7px;
+
+    font-size: 21px;
+    font-weight: 750;
+
+    color: #182235;
+}
+
+.profile-designation {
+    margin: 0 0 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #4f7cff;
+}
+
+.profile-department {
+    margin: 0;
+
+    font-size: 12.5px;
+    line-height: 1.65;
+
+    color: #65738b;
+}
+
+.profile-line {
+    width: 45px;
+    height: 2px;
+
+    margin: 18px auto;
+
+    background: linear-gradient(
+        90deg,
+        #4f7cff,
+        #5edee8
+    );
+
+    border-radius: 10px;
+}
+
+.profile-bio {
+    margin: 0;
+
+    font-size: 12.5px;
+    line-height: 1.65;
+
+    color: #7a879b;
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    .committee-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-image-wrapper {
+        height: 320px;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .committee-section {
+        padding: 70px 0;
+    }
+
+    .committee-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    .profile-image-wrapper {
+        height: 360px;
+    }
+
+    .committee-profile:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Always show social icons on mobile */
+    .profile-overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@media (max-width: 450px) {
+
+    .profile-image-wrapper {
+        height: 330px;
+    }
+
+    .profile-content {
+        padding: 23px 20px 25px;
+    }
+}
