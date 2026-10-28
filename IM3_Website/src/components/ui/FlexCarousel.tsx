@@ -1,23 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
-import type { CSSProperties } from 'react';
-import { Renderer, Program, Mesh, Triangle, Plane, Texture, RenderTarget } from 'ogl';
-
+import { useState, useImperativeHandle, forwardRef, type CSSProperties } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import './FlexCarousel.css';
 
-type BendPreset = 'liquid' | 'ribbon' | 'vortex' | 'arch';
-type CurlMode = 'twist' | 'rise' | 'fall';
-type CarouselIntro = 'rise' | 'bloom' | 'spin' | 'deal' | 'none';
-type CardFit = 'natural' | 'portrait' | 'square' | 'landscape';
-
 export interface FlexCarouselItem {
-  src: string;
-  alt?: string;
   title: string;
   subtitle?: string;
   description?: string;
   tags?: string[];
+  src?: string;
+  alt?: string;
 }
 
 export interface FlexCarouselRef {
@@ -26,589 +19,94 @@ export interface FlexCarouselRef {
   goTo: (index: number) => void;
 }
 
-interface PresetValues {
-  lensWidth: number;
-  lensHeight: number;
-  tilt: number;
-  roundness: number;
-  bend: number;
-  reach: number;
-  curl: CurlMode;
-  dispersion: number;
-  liquid: number;
-  followCursor: boolean;
-}
-
-export interface FlexCarouselProps extends Partial<PresetValues> {
+export interface FlexCarouselProps {
   items?: FlexCarouselItem[];
-  preset?: BendPreset;
-  intro?: CarouselIntro;
-  cardHeight?: number;
-  gap?: number;
-  radius?: number;
-  fit?: CardFit;
-  squeeze?: number;
-  focusOnClick?: boolean;
-  autoplay?: boolean;
-  interval?: number;
-  captions?: boolean;
-  captureWheel?: boolean;
   showNavButtons?: boolean;
+  captions?: boolean;
   onChange?: (index: number, item: FlexCarouselItem) => void;
   onSelect?: (index: number, item: FlexCarouselItem) => void;
   className?: string;
   style?: CSSProperties;
-}
-
-interface Settings extends PresetValues {
-  intro: CarouselIntro;
-  cardHeight: number;
-  gap: number;
-  radius: number;
-  fit: CardFit;
-  squeeze: number;
-  focusOnClick: boolean;
-  autoplay: boolean;
-  interval: number;
-  captureWheel: boolean;
-}
-
-interface Slot {
-  item: FlexCarouselItem;
-  index: number;
-  texture: Texture;
-  aspect: number;
-  loaded: boolean;
-  failed: boolean;
-  ready: number;
-  color: number[];
-  image: number[];
-  dispose: () => void;
-}
-
-interface Metrics {
-  cardH: number;
-  widths: number[];
-  centers: number[];
-  gap: number;
-  loop: number;
-}
-
-interface Instance {
-  index: number;
-  x0: number;
-  x1: number;
-  y0: number;
-  y1: number;
-}
-
-interface CardEffect {
-  alpha: number;
-  x: number;
-  y: number;
-  scale: number;
-}
-
-interface IntroEffects {
-  sceneAlpha: number;
-  strength: number;
-  card: ((rel: number) => CardEffect) | null;
-}
-
-interface Draw {
-  i: number;
-  rel: number;
-  x: number;
-  y: number;
-  cw: number;
-  ch: number;
-  alpha: number;
-}
-
-interface Engine {
-  wake: () => void;
-  setItems: (items: FlexCarouselItem[]) => void;
-  step: (delta: number) => void;
-  goTo: (index: number) => void;
-}
-
-interface Callbacks {
-  onChange?: (index: number, item: FlexCarouselItem) => void;
-  onSelect?: (index: number, item: FlexCarouselItem) => void;
-}
-
-/**
- * Creates high-DPI Canvas cards for the 8 domains.
- * Completely immune to SVG XML parse errors (e.g. unescaped &).
- * Produces crisp, beautiful vector cards on Retina and 4K displays.
- */
-export function createDomainCardCanvas(
-  number: string,
-  title: string,
-  subtitle: string,
-  tags: string[] = [],
-  accentColor = '#b91c2c'
-): string {
-  if (typeof document === 'undefined') return '';
-
-  const w = 700;
-  const h = 920;
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
-
-  // Background gradient: clean white to subtle warm ivory
-  const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-  bgGrad.addColorStop(0, '#ffffff');
-  bgGrad.addColorStop(0.85, '#faf5f5');
-  bgGrad.addColorStop(1, '#f5ebeb');
-
-  // Rounded card rectangle
-  const r = 40;
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(w - r, 0);
-  ctx.quadraticCurveTo(w, 0, w, r);
-  ctx.lineTo(w, h - r);
-  ctx.quadraticCurveTo(w, h, w - r, h);
-  ctx.lineTo(r, h);
-  ctx.quadraticCurveTo(0, h, 0, h - r);
-  ctx.lineTo(0, r);
-  ctx.quadraticCurveTo(0, 0, r, 0);
-  ctx.closePath();
-  ctx.fillStyle = bgGrad;
-  ctx.fill();
-
-  // Outer border
-  ctx.lineWidth = 5;
-  ctx.strokeStyle = '#e4e4e7';
-  ctx.stroke();
-
-  // Top accent bar
-  const topGrad = ctx.createLinearGradient(48, 48, 160, 48);
-  topGrad.addColorStop(0, accentColor);
-  topGrad.addColorStop(1, '#7f1420');
-  ctx.beginPath();
-  ctx.roundRect(48, 48, 80, 8, 4);
-  ctx.fillStyle = topGrad;
-  ctx.fill();
-
-  // Track Pill Badge
-  ctx.beginPath();
-  ctx.roundRect(48, 76, 170, 42, 21);
-  ctx.fillStyle = '#fbeeed';
-  ctx.fill();
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = accentColor;
-  ctx.stroke();
-
-  ctx.fillStyle = accentColor;
-  ctx.font = '700 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.letterSpacing = '1px';
-  ctx.fillText(`TRACK ${number}`, 133, 97);
-
-  // Large background watermark number
-  ctx.fillStyle = 'rgba(185, 28, 44, 0.07)';
-  ctx.font = '900 240px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'top';
-  ctx.fillText(number, w - 40, 100);
-
-  // Domain Title (with multi-line wrap support)
-  ctx.fillStyle = '#171717';
-  ctx.font = '700 44px "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-
-  const words = title.split(' ');
-  let line = '';
-  let y = 380;
-  const maxWidth = w - 96;
-  const lineHeight = 54;
-
-  for (let n = 0; n < words.length; n++) {
-    const testLine = line + words[n] + ' ';
-    const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && n > 0) {
-      ctx.fillText(line.trim(), 48, y);
-      line = words[n] + ' ';
-      y += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  ctx.fillText(line.trim(), 48, y);
-
-  // Subtitle / Scope line
-  y += lineHeight + 18;
-  ctx.fillStyle = '#b91c2c';
-  ctx.font = '600 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillText(subtitle.toUpperCase(), 48, y);
-
-  // Scope Tags pills
-  if (tags && tags.length > 0) {
-    y += 42;
-    let tagX = 48;
-    for (const tag of tags) {
-      ctx.font = '500 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      const tw = ctx.measureText(tag).width + 26;
-      if (tagX + tw < w - 48) {
-        ctx.beginPath();
-        ctx.roundRect(tagX, y, tw, 32, 16);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = '#d4d4d8';
-        ctx.stroke();
-
-        ctx.fillStyle = '#52525b';
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = 'left';
-        ctx.fillText(tag, tagX + 13, y + 16);
-
-        tagX += tw + 10;
-      }
-    }
-  }
-
-  // Footer separator & watermark
-  ctx.beginPath();
-  ctx.moveTo(48, h - 80);
-  ctx.lineTo(w - 48, h - 80);
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  ctx.fillStyle = '#71717a';
-  ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'left';
-  ctx.fillText('IM3-2027 · PCU PUNE', 48, h - 45);
-
-  // Accent icon button
-  ctx.beginPath();
-  ctx.arc(w - 68, h - 45, 18, 0, Math.PI * 2);
-  ctx.fillStyle = accentColor;
-  ctx.fill();
-
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(w - 74, h - 45);
-  ctx.lineTo(w - 62, h - 45);
-  ctx.moveTo(w - 66, h - 49);
-  ctx.lineTo(w - 62, h - 45);
-  ctx.lineTo(w - 66, h - 41);
-  ctx.stroke();
-
-  return canvas.toDataURL('image/png');
+  // Kept for backward compatibility with previous prompt
+  preset?: string;
+  intro?: string;
+  cardHeight?: number;
+  gap?: number;
+  radius?: number;
+  fit?: string;
+  autoplay?: boolean;
+  captureWheel?: boolean;
+  focusOnClick?: boolean;
 }
 
 export const EIGHT_DOMAINS_ITEMS: FlexCarouselItem[] = [
   {
-    src: '',
     title: 'Computational Intelligence',
-    subtitle: 'Track 01 · AI & Advanced Computing',
-    description: 'Artificial intelligence, machine learning, neural architectures, data-driven systems, and cybernetics applications.',
-    tags: ['Artificial Intelligence', 'Data Systems', 'Neural Networks']
+    subtitle: 'Track 01 · AI, Machine Learning & Computing',
+    description: 'Artificial intelligence, machine learning, neural architectures, data-driven systems, quantum computing, and cybernetic applications.',
+    tags: ['Artificial Intelligence', 'Data Systems', 'Neural Networks', 'Cybernetics']
   },
   {
-    src: '',
     title: 'Materials & Manufacturing',
-    subtitle: 'Track 02 · Smart Production & Materials',
-    description: 'Advanced materials science, smart composites, additive manufacturing, intelligent automation, and nanotechnology.',
-    tags: ['Smart Fabrication', 'Nanomaterials', 'Robotic Assembly']
+    subtitle: 'Track 02 · Smart Production & Materials Science',
+    description: 'Advanced materials science, smart composites, additive manufacturing, intelligent automation, and sustainable nanotechnology.',
+    tags: ['Smart Fabrication', 'Nanomaterials', 'Robotic Assembly', 'Composites']
   },
   {
-    src: '',
     title: 'Healthcare Innovation',
     subtitle: 'Track 03 · Medical Technologies & Wellbeing',
-    description: 'Interdisciplinary medical diagnostics, biomedical engineering, wearable sensors, and health informatics.',
-    tags: ['Biomedical Tech', 'Diagnostics', 'Health Informatics']
+    description: 'Interdisciplinary medical diagnostics, biomedical engineering, wearable bio-sensors, and healthcare informatics.',
+    tags: ['Biomedical Tech', 'Diagnostics', 'Health Informatics', 'Bio-Sensors']
   },
   {
-    src: '',
     title: 'Sustainable Systems',
     subtitle: 'Track 04 · Energy, Climate & Infrastructure',
     description: 'Clean energy transitions, grid resilience, climate-adaptive infrastructure, and circular environmental engineering.',
-    tags: ['Clean Energy', 'Circular Economy', 'Resilient Grids']
+    tags: ['Clean Energy', 'Circular Economy', 'Resilient Grids', 'Climate Tech']
   },
   {
-    src: '',
     title: 'Engineering Futures',
     subtitle: 'Track 05 · Automation, Robotics & Systems',
-    description: 'Next-generation mechatronics, autonomous cyber-physical systems, IoT, and embedded intelligent devices.',
-    tags: ['Autonomous Systems', 'Industrial IoT', 'Mechatronics']
+    description: 'Next-generation mechatronics, autonomous cyber-physical systems, Industrial IoT, and embedded intelligent devices.',
+    tags: ['Autonomous Systems', 'Industrial IoT', 'Mechatronics', 'Embedded Systems']
   },
   {
-    src: '',
     title: 'Agriculture & Food Systems',
     subtitle: 'Track 06 · AgriTech & Food Resilience',
     description: 'Smart precision agriculture, supply chain telemetry, sustainable crop resilience, and automated agro-processing.',
-    tags: ['Precision Agri', 'Supply Chain', 'Food Security']
+    tags: ['Precision Agri', 'Supply Chain', 'Food Security', 'Agro-Robotics']
   },
   {
-    src: '',
     title: 'Science & Society',
     subtitle: 'Track 07 · Technology, Ethics & Policy',
     description: 'Responsible computing, socio-technical policy frameworks, digital transformation governance, and societal equity.',
-    tags: ['AI Governance', 'Tech Policy', 'Societal Impact']
+    tags: ['AI Governance', 'Tech Policy', 'Societal Impact', 'Ethics in Tech']
   },
   {
-    src: '',
     title: 'Interdisciplinary Frontiers',
     subtitle: 'Track 08 · Convergent Research Paradigms',
     description: 'Breakthrough multidisciplinary research bridging established disciplines to pioneer innovative technological domains.',
-    tags: ['Cross-Domain', 'Convergent Tech', 'Emerging Science']
+    tags: ['Cross-Domain', 'Convergent Tech', 'Emerging Science', 'Frontier Research']
   }
 ];
 
-const BEND_PRESETS: Record<BendPreset, PresetValues> = {
-  liquid: {
-    lensWidth: 0.74,
-    lensHeight: 1.18,
-    tilt: 62,
-    roundness: 1,
-    bend: 0.34,
-    reach: 0.38,
-    curl: 'twist',
-    dispersion: 0.45,
-    liquid: 0,
-    followCursor: false
-  },
-  ribbon: {
-    lensWidth: 0.82,
-    lensHeight: 0.82,
-    tilt: 0,
-    roundness: 1,
-    bend: 0.28,
-    reach: 0.36,
-    curl: 'twist',
-    dispersion: 0.25,
-    liquid: 0,
-    followCursor: false
-  },
-  vortex: {
-    lensWidth: 0.7,
-    lensHeight: 0.95,
-    tilt: 30,
-    roundness: 1,
-    bend: 0.46,
-    reach: 0.3,
-    curl: 'twist',
-    dispersion: 0.5,
-    liquid: 0,
-    followCursor: false
-  },
-  arch: {
-    lensWidth: 0.8,
-    lensHeight: 0.8,
-    tilt: 0,
-    roundness: 1,
-    bend: 0.3,
-    reach: 0.36,
-    curl: 'rise',
-    dispersion: 0.4,
-    liquid: 0,
-    followCursor: false
-  }
-};
-
-const FIT_ASPECT: Record<string, number> = { portrait: 0.75, square: 1, landscape: 4 / 3 };
-const TAPS = 12;
-const PIXEL_BUDGET = 4.5e6;
-const INTRO_DURATION: Record<string, number> = { rise: 2.1, bloom: 1.6, spin: 2.2, deal: 1.5, fade: 0.35 };
-
-const wrap = (value: number, size: number) => ((((value + size / 2) % size) + size) % size) - size / 2;
-const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
-const easeOut = (value: number) => 1 - Math.pow(1 - clamp01(value), 3);
-const easeOutQuint = (value: number) => 1 - Math.pow(1 - clamp01(value), 5);
-const easeInOut = (value: number) => {
-  const t = clamp01(value);
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-};
-
-const cardVertex = `#version 300 es
-in vec3 position;
-in vec2 uv;
-uniform vec4 uRect;
-uniform vec2 uResolution;
-out vec2 vUv;
-out vec2 vLocal;
-void main() {
-  vUv = uv;
-  vLocal = vec2(position.x, -position.y) * uRect.zw;
-  vec2 px = uRect.xy + vLocal;
-  gl_Position = vec4(px.x / uResolution.x * 2.0 - 1.0, 1.0 - px.y / uResolution.y * 2.0, 0.0, 1.0);
-}
-`;
-
-const cardFragment = `#version 300 es
-precision highp float;
-uniform sampler2D tMap;
-uniform vec2 uSize;
-uniform vec2 uImage;
-uniform float uRadius;
-uniform float uAlpha;
-uniform float uReady;
-uniform float uShift;
-uniform float uDpr;
-uniform vec3 uPlaceholder;
-in vec2 vUv;
-in vec2 vLocal;
-out vec4 fragColor;
-
-float roundedBox(vec2 p, vec2 b, float r) {
-  vec2 q = abs(p) - b + r;
-  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
-}
-
-void main() {
-  float sd = roundedBox(vLocal, uSize * 0.5, min(uRadius, min(uSize.x, uSize.y) * 0.5));
-  float mask = clamp(0.5 - sd * uDpr, 0.0, 1.0);
-  vec2 local = vLocal / uSize + 0.5;
-  float cardAspect = uSize.x / uSize.y;
-  float imageAspect = uImage.x / max(uImage.y, 1.0);
-  vec2 scale = imageAspect > cardAspect ? vec2(cardAspect / imageAspect, 1.0) : vec2(1.0, imageAspect / cardAspect);
-  scale /= 1.02;
-  vec2 uv = vec2(local.x, 1.0 - local.y);
-  uv = (uv - 0.5) * scale + 0.5;
-  uv.x += uShift * (1.0 - scale.x) * 0.5;
-  vec3 image = texture(tMap, uv).rgb;
-  vec3 color = mix(uPlaceholder, image, uReady);
-  float alpha = mask * uAlpha;
-  fragColor = vec4(color * alpha, alpha);
-}
-`;
-
-const lensVertex = `#version 300 es
-in vec2 position;
-void main() {
-  gl_Position = vec4(position, 0.0, 1.0);
-}
-`;
-
-const lensFragment = `#version 300 es
-precision highp float;
-uniform sampler2D tScene;
-uniform vec2 uResolution;
-uniform float uDpr;
-uniform vec2 uCenter;
-uniform vec2 uHalf;
-uniform float uAngle;
-uniform float uExponent;
-uniform float uInner;
-uniform float uOuter;
-uniform float uFlow;
-uniform float uCurl;
-uniform float uDispersion;
-uniform float uStrength;
-uniform float uSceneAlpha;
-out vec4 fragColor;
-
-void main() {
-  vec2 frag = gl_FragCoord.xy / uDpr;
-  vec2 uv = frag / uResolution;
-  vec2 rel = frag - vec2(uCenter.x, uResolution.y - uCenter.y);
-  float ca = cos(uAngle);
-  float sa = sin(uAngle);
-  vec2 local = vec2(ca * rel.x + sa * rel.y, -sa * rel.x + ca * rel.y);
-  vec2 k = max(abs(local) / uHalf, vec2(1e-5));
-  float nd = pow(pow(k.x, uExponent) + pow(k.y, uExponent), 1.0 / uExponent);
-  vec2 grad = pow(k, vec2(uExponent - 1.0)) * sign(local) / uHalf * pow(nd, 1.0 - uExponent);
-  float glen = max(length(grad), 1e-6);
-  float edge = (nd - 1.0) / glen;
-  vec2 outward = grad / glen;
-  vec2 normal = vec2(ca * outward.x - sa * outward.y, sa * outward.x + ca * outward.y);
-  vec2 along = vec2(-normal.y, normal.x);
-
-  float t = clamp((edge + uInner) / (uInner + uOuter), 0.0, 1.0);
-  float ramp = t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-  float slope = 16.0 * t * t * (1.0 - t) * (1.0 - t);
-  float reachX = rel.x / (uResolution.x * 0.5);
-  float side = smoothstep(0.02, 0.3, abs(reachX)) * (uCurl == 0.0 ? sign(reachX) : uCurl);
-  float lift = ramp * side * uFlow * uStrength;
-  vec2 swirl = along * along.y * side * slope * uFlow * uStrength * 0.35;
-  vec2 drift = vec2(0.0, -lift) - swirl;
-  vec2 shifted = uv + drift / uResolution;
-
-  vec2 texels = uResolution * uDpr;
-  vec2 gx = dFdx(shifted);
-  vec2 gy = dFdy(shifted);
-  gx *= min(1.0, 3.0 / max(length(gx * texels), 1e-4));
-  gy *= min(1.0, 3.0 / max(length(gy * texels), 1e-4));
-
-  vec4 color = textureGrad(tScene, shifted, gx, gy);
-  vec2 spread = vec2(0.0, side * slope * uFlow * uStrength) / uResolution * uDispersion;
-  float spreadPx = length(spread * texels);
-  if (color.a > 0.002 && spreadPx > 0.25) {
-    vec3 base = color.rgb / color.a;
-    vec3 sumColor = vec3(0.0);
-    vec3 sumWeight = vec3(0.0);
-    for (int i = 0; i < ${TAPS}; i++) {
-      float s = (float(i) + 0.5) / float(${TAPS});
-      vec4 c = textureGrad(tScene, shifted + spread * (s - 0.5), gx, gy);
-      vec3 w = max(1.0 - abs(vec3(s) - vec3(0.15, 0.5, 0.85)) * 2.6, 0.0) * c.a;
-      sumColor += c.rgb * (w / max(c.a, 0.002));
-      sumWeight += w;
-    }
-    vec3 split = mix(base, sumColor / max(sumWeight, vec3(1e-4)), clamp(sumWeight * 2.0, 0.0, 1.0));
-    color.rgb = mix(color.rgb, clamp(split, 0.0, 1.0) * color.a, smoothstep(0.25, 1.5, spreadPx));
-  }
-
-  fragColor = color * uSceneAlpha;
-}
-`;
-
-const Digits = ({ value }: { value: number }) => (
-  <span className="flex-carousel__digits">
-    {String(value)
-      .padStart(2, '0')
-      .split('')
-      .map((digit, index) => (
-        <span key={index} className="flex-carousel__digit">
-          <span className="flex-carousel__reel" style={{ transform: `translateY(${-Number(digit) * 10}%)` }}>
-            {'0123456789'.split('').map((n) => (
-              <span key={n}>{n}</span>
-            ))}
-          </span>
-        </span>
-      ))}
-  </span>
-);
+// Distinctive theme accent for each domain track
+const TRACK_ACCENTS = [
+  { border: '#b91c2c', badgeBg: '#fef2f2', badgeText: '#b91c2c', iconBg: 'linear-gradient(135deg, #b91c2c, #7f1420)' },
+  { border: '#0284c7', badgeBg: '#f0f9ff', badgeText: '#0284c7', iconBg: 'linear-gradient(135deg, #0284c7, #0369a1)' },
+  { border: '#059669', badgeBg: '#ecfdf5', badgeText: '#059669', iconBg: 'linear-gradient(135deg, #059669, #047857)' },
+  { border: '#d97706', badgeBg: '#fffbeb', badgeText: '#d97706', iconBg: 'linear-gradient(135deg, #d97706, #b45309)' },
+  { border: '#7c3aed', badgeBg: '#f5f3ff', badgeText: '#7c3aed', iconBg: 'linear-gradient(135deg, #7c3aed, #6d28d9)' },
+  { border: '#16a34a', badgeBg: '#f0fdf4', badgeText: '#16a34a', iconBg: 'linear-gradient(135deg, #16a34a, #15803d)' },
+  { border: '#4f46e5', badgeBg: '#eef2ff', badgeText: '#4f46e5', iconBg: 'linear-gradient(135deg, #4f46e5, #4338ca)' },
+  { border: '#e11d48', badgeBg: '#fff1f2', badgeText: '#e11d48', iconBg: 'linear-gradient(135deg, #e11d48, #be123c)' },
+];
 
 const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function FlexCarousel(
   {
-    items,
-    preset = 'ribbon',
-    intro = 'rise',
-    cardHeight = 0.65,
-    gap = 20,
-    radius = 24,
-    fit = 'portrait',
-    lensWidth,
-    lensHeight,
-    tilt,
-    roundness,
-    bend,
-    reach,
-    curl,
-    dispersion,
-    liquid,
-    followCursor,
-    squeeze = 0.12,
-    focusOnClick = true,
-    autoplay = false,
-    interval = 4,
-    captions = true,
-    captureWheel = false, // strictly button-driven / intentional navigation
+    items = EIGHT_DOMAINS_ITEMS,
     showNavButtons = true,
+    captions = true,
     onChange,
     onSelect,
     className = '',
@@ -616,1033 +114,274 @@ const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function Fle
   },
   ref
 ) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const settingsRef = useRef<Settings | null>(null);
-  const itemsRef = useRef<FlexCarouselItem[]>([]);
-  const engineRef = useRef<Engine | null>(null);
-  const callbacksRef = useRef<Callbacks>({ onChange, onSelect });
   const [active, setActive] = useState(0);
-  const [revealed, setRevealed] = useState(false);
-  const [focusOpen, setFocusOpen] = useState(false);
+  const count = items.length;
 
-  // Initialize and generate clean canvas textures for domain items
-  const [preparedItems, setPreparedItems] = useState<FlexCarouselItem[]>([]);
+  const handleNext = () => {
+    const nextIdx = (active + 1) % count;
+    setActive(nextIdx);
+    onChange?.(nextIdx, items[nextIdx]);
+  };
 
-  useEffect(() => {
-    const rawList = items && items.length > 0 ? items : EIGHT_DOMAINS_ITEMS;
-    const generated = rawList.map((item, index) => {
-      const num = String(index + 1).padStart(2, '0');
-      // Always generate a fresh, crisp canvas image to ensure ZERO blank cards
-      const canvasSrc = createDomainCardCanvas(
-        num,
-        item.title,
-        item.subtitle || `Track ${num}`,
-        item.tags || [],
-        '#b91c2c'
-      );
-      return {
-        ...item,
-        src: item.src || canvasSrc,
-      };
-    });
-    setPreparedItems(generated);
-  }, [items]);
+  const handlePrev = () => {
+    const prevIdx = (active - 1 + count) % count;
+    setActive(prevIdx);
+    onChange?.(prevIdx, items[prevIdx]);
+  };
+
+  const handleGoTo = (idx: number) => {
+    const bounded = ((idx % count) + count) % count;
+    setActive(bounded);
+    onChange?.(bounded, items[bounded]);
+  };
 
   useImperativeHandle(ref, () => ({
-    next: () => engineRef.current?.step(1),
-    prev: () => engineRef.current?.step(-1),
-    goTo: (idx: number) => engineRef.current?.goTo(idx),
+    next: handleNext,
+    prev: handlePrev,
+    goTo: handleGoTo,
   }));
 
-  const base = BEND_PRESETS[preset] || BEND_PRESETS.ribbon;
-  const pick = <K extends keyof PresetValues>(value: PresetValues[K] | undefined, key: K): PresetValues[K] =>
-    value === undefined || value === null ? base[key] : value;
-
-  const list = preparedItems.length > 0 ? preparedItems : EIGHT_DOMAINS_ITEMS;
-  const itemsKey = list.map((item) => item.src).join('|');
-
-  useEffect(() => {
-    itemsRef.current = list;
-    callbacksRef.current = { onChange, onSelect };
-    settingsRef.current = {
-      intro,
-      cardHeight,
-      gap,
-      radius,
-      fit,
-      lensWidth: pick(lensWidth, 'lensWidth'),
-      lensHeight: pick(lensHeight, 'lensHeight'),
-      tilt: pick(tilt, 'tilt'),
-      roundness: pick(roundness, 'roundness'),
-      bend: pick(bend, 'bend'),
-      reach: pick(reach, 'reach'),
-      curl: pick(curl, 'curl'),
-      dispersion: pick(dispersion, 'dispersion'),
-      liquid: pick(liquid, 'liquid'),
-      followCursor: pick(followCursor, 'followCursor'),
-      squeeze,
-      focusOnClick,
-      autoplay,
-      interval,
-      captureWheel,
-    };
-    engineRef.current?.wake();
-  });
-
-  useEffect(() => {
-    if (preparedItems.length > 0) {
-      engineRef.current?.setItems(itemsRef.current);
-    }
-  }, [itemsKey, preparedItems.length]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return undefined;
-
-    const renderer = new Renderer({
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: true,
-      depth: false,
-    });
-    const gl = renderer.gl;
-    if (!renderer.isWebgl2) {
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      return undefined;
-    }
-    gl.clearColor(0, 0, 0, 0);
-    const canvas = gl.canvas;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.setAttribute('aria-hidden', 'true');
-    container.prepend(canvas);
-
-    const cardProgram = new Program(gl, {
-      vertex: cardVertex,
-      fragment: cardFragment,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      uniforms: {
-        tMap: { value: new Texture(gl) },
-        uRect: { value: [0, 0, 1, 1] },
-        uResolution: { value: [1, 1] },
-        uSize: { value: [1, 1] },
-        uImage: { value: [1, 1] },
-        uRadius: { value: 24 },
-        uAlpha: { value: 1 },
-        uReady: { value: 0 },
-        uShift: { value: 0 },
-        uDpr: { value: 1 },
-        uPlaceholder: { value: [0.98, 0.96, 0.96] },
-      },
-    });
-    cardProgram.setBlendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    const cardMesh = new Mesh(gl, { geometry: new Plane(gl), program: cardProgram });
-
-    const target = new RenderTarget(gl, {
-      width: 2,
-      height: 2,
-      depth: false,
-      minFilter: gl.LINEAR_MIPMAP_LINEAR,
-      magFilter: gl.LINEAR,
-    });
-
-    const lensUniforms = {
-      tScene: { value: target.texture },
-      uResolution: { value: [1, 1] },
-      uDpr: { value: 1 },
-      uCenter: { value: [0, 0] },
-      uHalf: { value: [1, 1] },
-      uAngle: { value: 0 },
-      uExponent: { value: 2 },
-      uInner: { value: 60 },
-      uOuter: { value: 80 },
-      uFlow: { value: 0 },
-      uCurl: { value: 0 },
-      uDispersion: { value: 0 },
-      uStrength: { value: 0 },
-      uSceneAlpha: { value: 0 },
-    };
-    const lensProgram = new Program(gl, {
-      vertex: lensVertex,
-      fragment: lensFragment,
-      uniforms: lensUniforms,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-    });
-    lensProgram.setBlendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    const lensMesh = new Mesh(gl, {
-      geometry: new Triangle(gl),
-      program: lensProgram,
-    });
-
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 8 : 0;
-
-    let slots: Slot[] = [];
-    let width = 1;
-    let height = 1;
-    let pos = 0;
-    let vel = 0;
-    let goal = 0;
-    let mode = 'spring';
-    let wheelAt = 0;
-    let raf = 0;
-    let last = performance.now();
-    let visible = true;
-    let alive = true;
-    let dirty = true;
-    let activeIndex = -1;
-    let interactedAt = -Infinity;
-    let autoplayAt = performance.now();
-    let hasFocus = false;
-    let deform = 0;
-    let deformVel = 0;
-    let layout: Metrics | null = null;
-    let resnap = false;
-    let hover = '';
-    let lift = 1;
-    let energy = 0;
-    let lastPos = 0;
-    const lens = { x: 0, y: 0, vx: 0, vy: 0, ready: false };
-    const pointer = {
-      x: 0,
-      y: 0,
-      over: false,
-      down: false,
-      id: -1,
-      startX: 0,
-      startY: 0,
-      startPos: 0,
-      dragging: false,
-      touch: false,
-      samples: [] as { x: number; t: number }[],
-    };
-    const introState = { kind: 'none', t: 0, running: false, done: false, readyAt: 0 };
-    const focus = { index: -1, pending: -1, t: 0, v: 0, target: 0 };
-    let instances: Instance[] = [];
-
-    const loadSlot = (item: FlexCarouselItem, index: number): Slot => {
-      const texture = new Texture(gl, {
-        generateMipmaps: true,
-        minFilter: gl.LINEAR_MIPMAP_LINEAR,
-        magFilter: gl.LINEAR,
-        anisotropy,
-      });
-      const slot: Slot = {
-        item,
-        index,
-        texture,
-        aspect: 0.76,
-        loaded: false,
-        failed: false,
-        ready: 0,
-        color: [0.98, 0.96, 0.96],
-        image: [700, 920],
-        dispose: () => {},
-      };
-
-      if (!item.src) {
-        slot.loaded = true;
-        slot.ready = 1;
-        return slot;
-      }
-
-      const image = new Image();
-      image.crossOrigin = 'anonymous';
-      image.decoding = 'async';
-      image.onload = () => {
-        if (!alive || !slots.includes(slot)) return;
-        texture.image = image;
-        texture.update();
-        slot.image = [image.naturalWidth || 700, image.naturalHeight || 920];
-        slot.aspect = slot.image[0] / slot.image[1];
-        slot.color = [0.98, 0.96, 0.96];
-        slot.loaded = true;
-        dirty = true;
-        start();
-      };
-      image.onerror = () => {
-        if (!alive) return;
-        slot.failed = true;
-        dirty = true;
-        start();
-      };
-      image.src = item.src;
-      slot.dispose = () => {
-        image.onload = null;
-        image.onerror = null;
-        gl.deleteTexture(texture.texture);
-      };
-      return slot;
-    };
-
-    const setItems = (next: FlexCarouselItem[]) => {
-      slots.forEach((slot) => slot.dispose());
-      slots = next.map(loadSlot);
-      activeIndex = -1;
-      layout = null;
-      resnap = true;
-      focus.target = 0;
-      focus.t = 0;
-      focus.v = 0;
-      focus.pending = -1;
-      setFocusOpen(false);
-      introState.readyAt = performance.now();
-      dirty = true;
-      start();
-    };
-
-    const metrics = (s: Settings): Metrics => {
-      const cardH = Math.max(24, s.cardHeight * height);
-      const fixed = FIT_ASPECT[s.fit];
-      const widths = slots.map((slot) => (fixed || slot.aspect) * cardH);
-      const centers: number[] = [];
-      let cursor = 0;
-      for (let i = 0; i < widths.length; i++) {
-        centers.push(cursor + widths[i] / 2);
-        cursor += widths[i] + s.gap;
-      }
-      return { cardH, widths, centers, gap: s.gap, loop: Math.max(cursor, 1) };
-    };
-
-    const nearest = (m: Metrics, at: number) => {
-      let best = 0;
-      let bestDist = Infinity;
-      for (let i = 0; i < m.centers.length; i++) {
-        const dist = Math.abs(wrap(m.centers[i] - at, m.loop));
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
-      }
-      return best;
-    };
-
-    const snapPoint = (m: Metrics, at: number) => {
-      const i = nearest(m, at);
-      return at + wrap(m.centers[i] - at, m.loop);
-    };
-
-    const remap = (from: Metrics, to: Metrics, at: number) => {
-      const i = nearest(from, at);
-      const offset = wrap(at - from.centers[i], from.loop);
-      const cycles = Math.round((at - offset - from.centers[i]) / from.loop);
-      return cycles * to.loop + to.centers[i] + offset * (to.widths[i] / from.widths[i]);
-    };
-
-    const step = (m: Metrics, delta: number) => {
-      let at = snapPoint(m, goal);
-      let index = nearest(m, at);
-      const n = m.centers.length;
-      for (let k = 0; k < Math.abs(delta); k++) {
-        const next = (index + (delta > 0 ? 1 : n - 1)) % n;
-        const distance =
-          delta > 0
-            ? m.widths[index] / 2 + m.gap + m.widths[next] / 2
-            : -(m.widths[next] / 2 + m.gap + m.widths[index] / 2);
-        at += distance;
-        index = next;
-      }
-      goal = at;
-      mode = 'spring';
-      dirty = true;
-      start();
-    };
-
-    const goTo = (m: Metrics, index: number) => {
-      const i = ((index % m.centers.length) + m.centers.length) % m.centers.length;
-      goal = goal + wrap(m.centers[i] - goal, m.loop);
-      mode = 'spring';
-      dirty = true;
-      start();
-    };
-
-    const openFocus = (index: number) => {
-      focus.index = index;
-      focus.pending = -1;
-      focus.target = 1;
-      setFocusOpen(true);
-      dirty = true;
-      start();
-    };
-
-    const closeFocus = () => {
-      focus.pending = -1;
-      if (focus.target === 0) return false;
-      focus.target = 0;
-      setFocusOpen(false);
-      dirty = true;
-      start();
-      return true;
-    };
-
-    const skipIntro = () => {
-      if (introState.running) introState.t = 1;
-    };
-
-    const introEffects = () => {
-      const t = introState.running ? introState.t : introState.done ? 1 : 0;
-      const e: IntroEffects = { sceneAlpha: 1, strength: 1, card: null };
-      if (!introState.done && !introState.running) {
-        e.sceneAlpha = 0;
-        e.strength = 0;
-        return e;
-      }
-      if (t >= 1) return e;
-      const kind = introState.kind;
-      if (kind === 'rise') {
-        e.strength = easeInOut((t - 0.3) / 0.65);
-        e.card = (rel) => {
-          const delay = Math.min(Math.abs(rel) / (width * 0.6), 1) * 0.34;
-          const local = clamp01((t - delay) / 0.6);
-          return {
-            alpha: clamp01(local * 4),
-            x: 0,
-            y: (1 - easeOutQuint(local)) * height * 0.62,
-            scale: 0.5 + 0.5 * easeInOut((local - 0.18) / 0.82),
-          };
-        };
-      } else if (kind === 'bloom') {
-        e.strength = easeInOut((t - 0.2) / 0.8);
-        e.card = (rel) => {
-          const delay = Math.min(Math.abs(rel) / (width * 0.6), 1) * 0.25;
-          const local = easeOut((t - delay) / 0.55);
-          return { alpha: local, x: 0, y: 0, scale: 0.92 + 0.08 * local };
-        };
-      } else if (kind === 'spin') {
-        e.sceneAlpha = easeOut(t / 0.25);
-        e.strength = easeOut((t - 0.55) / 0.45);
-      } else if (kind === 'deal') {
-        e.strength = easeOut((t - 0.45) / 0.5);
-        e.card = (rel) => {
-          const spread = Math.min(Math.abs(rel) / (width * 0.6), 1) * 0.3;
-          const local = easeOut((t - 0.12 - spread) / 0.5);
-          return { alpha: easeOut((t - spread) / 0.12), x: -rel * (1 - local), y: 0, scale: 1 };
-        };
-      } else {
-        e.sceneAlpha = easeOut(t);
-        e.strength = easeOut(t);
-      }
-      return e;
-    };
-
-    const beginIntro = (s: Settings, m: Metrics) => {
-      const kind = reducedMotion && s.intro !== 'none' ? 'fade' : s.intro;
-      introState.kind = INTRO_DURATION[kind] ? kind : 'none';
-      introState.running = introState.kind !== 'none';
-      introState.done = !introState.running;
-      introState.t = 0;
-      if (introState.done) setRevealed(true);
-      if (introState.kind === 'spin') {
-        const distance = m.loop * 1.6 + width;
-        pos = goal + distance;
-        vel = -distance * 3;
-        mode = 'spring';
-      }
-    };
-
-    const resize = () => {
-      width = Math.max(1, container.clientWidth);
-      height = Math.max(1, container.clientHeight);
-      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(PIXEL_BUDGET / (width * height)));
-      renderer.setSize(width, height);
-      target.setSize(Math.max(2, Math.round(width * renderer.dpr)), Math.max(2, Math.round(height * renderer.dpr)));
-      lensUniforms.tScene.value = target.texture;
-      dirty = true;
-      start();
-    };
-
-    const frame = (now: number) => {
-      raf = 0;
-      if (!alive) return;
-      const s = settingsRef.current;
-      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
-      last = now;
-      if (!s || !slots.length) {
-        if (visible) raf = requestAnimationFrame(frame);
-        return;
-      }
-
-      const m = metrics(s);
-      const n = slots.length;
-      let animating = false;
-
-      if (resnap) {
-        goal = snapPoint(m, goal);
-        pos = goal;
-        vel = 0;
-        resnap = false;
-      } else if (layout && layout.loop !== m.loop) {
-        pos = remap(layout, m, pos);
-        goal = remap(layout, m, goal);
-        pointer.startPos = pos + (pointer.x - pointer.startX);
-        animating = true;
-      }
-      layout = m;
-
-      if (!introState.running && !introState.done) {
-        const allSettled = slots.every((slot) => slot.loaded || slot.failed);
-        if (allSettled || now - introState.readyAt > 3500) {
-          goal = snapPoint(m, goal);
-          pos = goal;
-          beginIntro(s, m);
-        }
-      }
-      if (introState.running) {
-        introState.t = Math.min(1, introState.t + dt / (INTRO_DURATION[introState.kind] || 1));
-        if (introState.t >= 1) {
-          introState.running = false;
-          introState.done = true;
-          setRevealed(true);
-        }
-        animating = true;
-      }
-
-      if (mode === 'wheel' && now - wheelAt > 150) {
-        goal = snapPoint(m, goal);
-        mode = 'spring';
-      }
-      if (!pointer.dragging) {
-        const spinning = introState.running && introState.kind === 'spin';
-        const stiffness = spinning ? 9 : mode === 'wheel' ? 80 : 55;
-        const damping = 2 * Math.sqrt(stiffness);
-        const steps = Math.ceil(dt / (1 / 240));
-        const h = dt / steps;
-        for (let i = 0; i < steps; i++) {
-          const acc = stiffness * (goal - pos) - damping * vel;
-          vel += acc * h;
-          pos += vel * h;
-        }
-        if (Math.abs(goal - pos) < 0.05 && Math.abs(vel) < 0.5) {
-          pos = goal;
-          vel = 0;
-        } else {
-          animating = true;
-        }
-      } else {
-        animating = true;
-      }
-
-      if (Math.abs(pos) > m.loop * 8) {
-        const shift = Math.round(pos / m.loop) * m.loop;
-        pos -= shift;
-        goal -= shift;
-        pointer.startPos -= shift;
-      }
-
-      const current = nearest(m, pos);
-      if (current !== activeIndex) {
-        activeIndex = current;
-        setActive(current);
-        callbacksRef.current.onChange?.(current, itemsRef.current[current]);
-      }
-
-      if (focus.pending >= 0 && mode === 'spring' && Math.abs(goal - pos) < 1.5 && Math.abs(vel) < 30) {
-        if (current === focus.pending) openFocus(current);
-        else focus.pending = -1;
-      }
-
-      const travel = Math.abs(pos - lastPos) / dt;
-      lastPos = pos;
-      const energyTarget = reducedMotion ? 0 : Math.min(travel / 2600, 1);
-      energy += (energyTarget - energy) * (1 - Math.exp(-dt / (energyTarget > energy ? 0.07 : 0.35)));
-      if (energy > 0.001) animating = true;
-      const liquidAmount = reducedMotion ? 0 : s.liquid;
-      const push = Math.max(-1, Math.min(1, vel / 2200));
-      const deformStiffness = 120;
-      const deformDamping = 2 * Math.sqrt(deformStiffness) * 0.32;
-      deformVel += (deformStiffness * (push - deform) - deformDamping * deformVel) * dt;
-      deform += deformVel * dt;
-      if (Math.abs(deform) > 0.0005 || Math.abs(deformVel) > 0.005) animating = true;
-
-      const focusStiffness = 64;
-      focus.v += (focusStiffness * (focus.target - focus.t) - 2 * Math.sqrt(focusStiffness) * focus.v) * dt;
-      focus.t += focus.v * dt;
-      if (Math.abs(focus.target - focus.t) < 0.0005 && Math.abs(focus.v) < 0.001) {
-        focus.t = focus.target;
-        focus.v = 0;
-      } else {
-        animating = true;
-      }
-      const focusAmount = clamp01(focus.t);
-      const focusEase = easeInOut(focusAmount);
-      const focusW = focus.index >= 0 && focus.index < n ? m.widths[focus.index] : m.cardH;
-      const focusScale = Math.max(1, Math.min(1.3, (height * 0.84) / m.cardH, (width * 0.92) / focusW));
-      const nextLift = 1 + (focusScale - 1) * focusEase;
-      if (Math.abs(nextLift - lift) > 0.0005) {
-        lift = nextLift;
-        container.style.setProperty('--flex-carousel-lift', lift.toFixed(4));
-      }
-
-      const effects = introEffects();
-
-      const homeX = width / 2;
-      const homeY = height / 2;
-      const follow = s.followCursor && pointer.over && !pointer.dragging && !pointer.touch && focus.target === 0;
-      const aimX = follow ? pointer.x : homeX;
-      const aimY = follow ? pointer.y : homeY;
-      if (!lens.ready) {
-        lens.x = homeX;
-        lens.y = homeY;
-        lens.ready = true;
-      }
-      const lensK = 110;
-      const lensC = 2 * Math.sqrt(lensK) * 0.8;
-      lens.vx += (lensK * (aimX - lens.x) - lensC * lens.vx) * dt;
-      lens.vy += (lensK * (aimY - lens.y) - lensC * lens.vy) * dt;
-      lens.x += lens.vx * dt;
-      lens.y += lens.vy * dt;
-      if (Math.abs(aimX - lens.x) + Math.abs(aimY - lens.y) > 0.2 || Math.abs(lens.vx) + Math.abs(lens.vy) > 0.5)
-        animating = true;
-
-      const cardH = m.cardH;
-      let halfW = (s.lensWidth * width) / 2;
-      let halfH = (s.lensHeight * width) / 2;
-      const squash = Math.abs(deform) * liquidAmount;
-      halfW *= 1 + squash * 0.16;
-      halfH *= 1 - squash * 0.08;
-      const lensX = lens.x - deform * 14 * liquidAmount;
-
-      for (let i = 0; i < n; i++) {
-        const slot = slots[i];
-        if (slot.loaded && slot.ready < 1) {
-          slot.ready = Math.min(1, slot.ready + dt / 0.45);
-          animating = true;
-        }
-      }
-
-      const waiting = !introState.done;
-      if (dirty || animating || pointer.dragging) {
-        dirty = false;
-        instances = [];
-        const dpr = renderer.dpr;
-        cardProgram.uniforms.uResolution.value = [width, height];
-        cardProgram.uniforms.uDpr.value = dpr;
-        cardProgram.uniforms.uRadius.value = s.radius;
-        const shrink = 1 - clamp01(s.squeeze) * energy;
-        const draws: Draw[] = [];
-        for (let i = 0; i < n; i++) {
-          const w = m.widths[i];
-          const baseRel = wrap(m.centers[i] - pos, m.loop);
-          for (let k = -3; k <= 3; k++) {
-            const rel = baseRel + k * m.loop;
-            if (Math.abs(rel) - w / 2 > width + 40) continue;
-            const fx = effects.card ? effects.card(rel) : null;
-            let x = homeX + rel + (fx ? fx.x : 0);
-            let scale = shrink * (fx ? fx.scale : 1);
-            let alpha = fx ? fx.alpha : 1;
-            if (focusAmount > 0) {
-              if (i === focus.index && Math.abs(rel) < w) {
-                scale *= 1 + (focusScale - 1) * focusEase;
-              } else {
-                const order = Math.min(Math.abs(rel) / width, 1) * 0.25;
-                const part = easeInOut(focusAmount * 1.25 - order);
-                x += Math.sign(rel) * part * width * 0.7;
-                alpha *= 1 - part;
-              }
-            }
-            const cw = w * scale;
-            if (alpha <= 0.001 || x + cw / 2 < -40 || x - cw / 2 > width + 40) continue;
-            draws.push({ i, rel, x, y: homeY + (fx ? fx.y : 0), cw, ch: cardH * scale, alpha });
-          }
-        }
-        draws.sort((a, b) => Math.abs(b.rel) - Math.abs(a.rel));
-        let first = true;
-        for (const draw of draws) {
-          const slot = slots[draw.i];
-          cardProgram.uniforms.tMap.value = slot.texture;
-          cardProgram.uniforms.uRect.value = [draw.x, draw.y, draw.cw + 2, draw.ch + 2];
-          cardProgram.uniforms.uSize.value = [draw.cw, draw.ch];
-          cardProgram.uniforms.uImage.value = slot.image;
-          cardProgram.uniforms.uAlpha.value = draw.alpha;
-          cardProgram.uniforms.uReady.value = slot.ready;
-          cardProgram.uniforms.uShift.value = reducedMotion ? 0 : Math.max(-1, Math.min(1, draw.rel / (width * 0.75)));
-          cardProgram.uniforms.uPlaceholder.value = slot.color;
-          renderer.render({ scene: cardMesh, target, clear: first });
-          first = false;
-          instances.push({
-            index: draw.i,
-            x0: draw.x - draw.cw / 2,
-            x1: draw.x + draw.cw / 2,
-            y0: draw.y - draw.ch / 2,
-            y1: draw.y + draw.ch / 2,
-          });
-        }
-        if (first) {
-          renderer.bindFramebuffer(target);
-          gl.viewport(0, 0, target.width, target.height);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-        }
-        renderer.bindFramebuffer();
-        target.texture.bind();
-        gl.generateMipmap(gl.TEXTURE_2D);
-
-        lensUniforms.uResolution.value = [width, height];
-        lensUniforms.uDpr.value = dpr;
-        lensUniforms.uCenter.value = [lensX, lens.y];
-        lensUniforms.uHalf.value = [Math.max(halfW, 1), Math.max(halfH, 1)];
-        lensUniforms.uAngle.value = (s.tilt * Math.PI) / 180;
-        lensUniforms.uExponent.value = 2 + Math.pow(1 - clamp01(s.roundness), 1.5) * 10;
-        const spanW = Math.max(halfW, 1);
-        const spanH = Math.max(halfH, 1);
-        const inner = Math.max(4, s.reach * (spanW + spanH) * 0.5);
-        lensUniforms.uInner.value = inner;
-        lensUniforms.uOuter.value = inner * 1.6;
-        lensUniforms.uFlow.value = s.bend * (spanW + spanH) * 0.45;
-        lensUniforms.uCurl.value = s.curl === 'rise' ? 1 : s.curl === 'fall' ? -1 : 0;
-        lensUniforms.uDispersion.value = s.dispersion * 0.12 * (1 + Math.abs(deform) * liquidAmount * 1.2);
-        lensUniforms.uStrength.value = effects.strength * (1 - focusEase);
-        lensUniforms.uSceneAlpha.value = effects.strength > 0 ? effects.sceneAlpha : 1;
-        renderer.render({ scene: lensMesh });
-      }
-
-      let nextHover = '';
-      if (pointer.over && !pointer.dragging && introState.done && s.focusOnClick) {
-        const hit = instances.find(
-          (inst) => pointer.x >= inst.x0 && pointer.x <= inst.x1 && pointer.y >= inst.y0 && pointer.y <= inst.y1
-        );
-        if (focus.target > 0) nextHover = 'close';
-        else if (hit) nextHover = 'open';
-      }
-      if (nextHover !== hover) {
-        hover = nextHover;
-        if (hover) container.setAttribute('data-hover', hover);
-        else container.removeAttribute('data-hover');
-      }
-
-      if (visible && (animating || waiting || dirty || pointer.down)) raf = requestAnimationFrame(frame);
-    };
-
-    const start = () => {
-      if (raf || !visible || !alive) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-
-    const localPoint = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      return [e.clientX - rect.left, e.clientY - rect.top];
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      if (e.button !== undefined && e.button > 0) return;
-      skipIntro();
-      const [x, y] = localPoint(e);
-      pointer.down = true;
-      pointer.id = e.pointerId;
-      pointer.touch = e.pointerType === 'touch';
-      pointer.startX = x;
-      pointer.startY = y;
-      pointer.x = x;
-      pointer.y = y;
-      pointer.startPos = pos;
-      pointer.dragging = false;
-      pointer.samples = [{ x, t: performance.now() }];
-      interactedAt = performance.now();
-      if (Math.abs(vel) > 40) {
-        goal = pos;
-        vel = 0;
-      }
-      dirty = true;
-      start();
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
-      const [x, y] = localPoint(e);
-      pointer.x = x;
-      pointer.y = y;
-      pointer.over = true;
-      if (pointer.down && e.pointerId === pointer.id) {
-        const dx = x - pointer.startX;
-        const dy = y - pointer.startY;
-        const slop = pointer.touch ? 10 : 5;
-        if (!pointer.dragging) {
-          if (pointer.touch && Math.abs(dy) > slop && Math.abs(dy) > Math.abs(dx)) {
-            pointer.down = false;
-            return;
-          }
-          if (Math.abs(dx) > slop) {
-            pointer.dragging = true;
-            pointer.startX = x;
-            pointer.startPos = pos;
-            closeFocus();
-            try {
-              container.setPointerCapture(e.pointerId);
-            } catch {
-              pointer.dragging = true;
-            }
-            container.setAttribute('data-dragging', '');
-          }
-        }
-        if (pointer.dragging) {
-          pos = pointer.startPos - (x - pointer.startX);
-          goal = pos;
-          vel = 0;
-          const now = performance.now();
-          pointer.samples.push({ x, t: now });
-          while (pointer.samples.length > 2 && now - pointer.samples[0].t > 100) pointer.samples.shift();
-        }
-      }
-      dirty = true;
-      start();
-    };
-
-    const onPointerUp = (e: PointerEvent) => {
-      if (!pointer.down || e.pointerId !== pointer.id) return;
-      pointer.down = false;
-      container.removeAttribute('data-dragging');
-      const s = settingsRef.current;
-      if (!s) return;
-      const m = metrics(s);
-      interactedAt = performance.now();
-      if (pointer.dragging) {
-        pointer.dragging = false;
-        const now = performance.now();
-        const first = pointer.samples[0];
-        const lastSample = pointer.samples[pointer.samples.length - 1];
-        let velocity = 0;
-        if (first && lastSample && lastSample.t > first.t && now - lastSample.t < 70) {
-          velocity = -((lastSample.x - first.x) / (lastSample.t - first.t)) * 1000;
-        }
-        vel = velocity;
-        const landing = snapPoint(m, pos + velocity * 0.32);
-        goal = landing;
-        if (Math.abs(velocity) > 400 && Math.abs(landing - pos) < 1) step(m, velocity > 0 ? 1 : -1);
-        mode = 'spring';
-        start();
-        return;
-      }
-      if (closeFocus()) return;
-      const [x, y] = localPoint(e);
-      const hit = instances.find((inst) => x >= inst.x0 && x <= inst.x1 && y >= inst.y0 && y <= inst.y1);
-      if (!hit) return;
-      if (hit.index === activeIndex && Math.abs(goal - pos) < 2) {
-        callbacksRef.current.onSelect?.(hit.index, itemsRef.current[hit.index]);
-        if (s.focusOnClick) openFocus(hit.index);
-      } else {
-        const rel = (hit.x0 + hit.x1) / 2 - width / 2;
-        goal = snapPoint(m, pos + rel);
-        mode = 'spring';
-        if (s.focusOnClick) focus.pending = hit.index;
-        start();
-      }
-    };
-
-    const onPointerLeave = () => {
-      pointer.over = false;
-      dirty = true;
-      start();
-    };
-
-    const onPointerCancel = () => {
-      pointer.down = false;
-      pointer.dragging = false;
-      container.removeAttribute('data-dragging');
-      const s = settingsRef.current;
-      if (!s) return;
-      goal = snapPoint(metrics(s), pos);
-      mode = 'spring';
-      start();
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      const s = settingsRef.current;
-      if (!s || e.ctrlKey || !s.captureWheel) return;
-      let dx = e.deltaX;
-      let dy = e.deltaY;
-      if (e.shiftKey && Math.abs(dx) < Math.abs(dy)) {
-        dx = dy;
-        dy = 0;
-      }
-      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? height : 1;
-      const horizontal = Math.abs(dx) > Math.abs(dy);
-      if (!horizontal && !s.captureWheel) return;
-      e.preventDefault();
-      skipIntro();
-      interactedAt = performance.now();
-      if (closeFocus()) return;
-      const delta = Math.max(-120, Math.min(120, (horizontal ? dx : dy) * unit));
-      goal += delta * 1.25;
-      mode = 'wheel';
-      wheelAt = performance.now();
-      start();
-    };
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      const s = settingsRef.current;
-      if (!s) return;
-      const m = metrics(s);
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        skipIntro();
-        closeFocus();
-        interactedAt = performance.now();
-        step(m, 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        skipIntro();
-        closeFocus();
-        interactedAt = performance.now();
-        step(m, -1);
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        closeFocus();
-        goTo(m, 0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        closeFocus();
-        goTo(m, slots.length - 1);
-      } else if (e.key === 'Escape') {
-        if (closeFocus()) e.preventDefault();
-      } else if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (closeFocus() || activeIndex < 0) return;
-        callbacksRef.current.onSelect?.(activeIndex, itemsRef.current[activeIndex]);
-        if (s.focusOnClick) openFocus(activeIndex);
-      }
-    };
-
-    const onFocus = () => {
-      hasFocus = true;
-    };
-    const onBlur = () => {
-      hasFocus = false;
-    };
-    const onVisibility = () => {
-      if (!document.hidden) start();
-    };
-
-    container.addEventListener('pointerdown', onPointerDown);
-    container.addEventListener('pointermove', onPointerMove);
-    container.addEventListener('pointerup', onPointerUp);
-    container.addEventListener('pointerleave', onPointerLeave);
-    container.addEventListener('pointercancel', onPointerCancel);
-    container.addEventListener('wheel', onWheel, { passive: false });
-    container.addEventListener('keydown', onKeyDown);
-    container.addEventListener('focus', onFocus);
-    container.addEventListener('blur', onBlur);
-    document.addEventListener('visibilitychange', onVisibility);
-
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      start();
-    });
-    intersectionObserver.observe(container);
-
-    engineRef.current = {
-      wake: () => {
-        dirty = true;
-        start();
-      },
-      setItems,
-      step: (delta: number) => {
-        const s = settingsRef.current;
-        if (!s) return;
-        skipIntro();
-        closeFocus();
-        step(metrics(s), delta);
-      },
-      goTo: (idx: number) => {
-        const s = settingsRef.current;
-        if (!s) return;
-        skipIntro();
-        closeFocus();
-        goTo(metrics(s), idx);
-      },
-    };
-
-    resize();
-    setItems(itemsRef.current);
-
-    return () => {
-      alive = false;
-      visible = false;
-      engineRef.current = null;
-      cancelAnimationFrame(raf);
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      container.removeEventListener('pointerdown', onPointerDown);
-      container.removeEventListener('pointermove', onPointerMove);
-      container.removeEventListener('pointerup', onPointerUp);
-      container.removeEventListener('pointerleave', onPointerLeave);
-      container.removeEventListener('pointercancel', onPointerCancel);
-      container.removeEventListener('wheel', onWheel);
-      container.removeEventListener('keydown', onKeyDown);
-      container.removeEventListener('focus', onFocus);
-      container.removeEventListener('blur', onBlur);
-      document.removeEventListener('visibilitychange', onVisibility);
-      slots.forEach((slot) => slot.dispose());
-      slots = [];
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    };
-  }, []);
-
-  const current = list[active] || list[0];
-  const label = current ? current.title || current.alt || `Domain ${active + 1}` : '';
+  const currentItem = items[active];
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between">
-      <div
-        ref={containerRef}
-        className={`flex-carousel ${className}`.trim()}
-        style={
-          {
-            ...style,
-            '--flex-carousel-half': `${Math.min(Math.max(cardHeight, 0.05), 1) * 50}%`,
-          } as CSSProperties
-        }
-        role="region"
-        aria-roledescription="carousel"
-        aria-label="Eight Technical Domains Carousel"
-        tabIndex={0}
-      >
-        {captions && current && revealed && (
-          <div className="flex-carousel__caption" aria-hidden="true">
-            <span key={active} className="flex-carousel__title">
-              {current.title || current.alt}
-              {current.subtitle && <span className="flex-carousel__subtitle">{current.subtitle}</span>}
-            </span>
-            <span className="flex-carousel__count" data-hidden={focusOpen ? '' : undefined}>
-              <Digits value={active + 1} />
-              <span className="flex-carousel__slash">/</span>
-              <span>{String(list.length).padStart(2, '0')}</span>
-            </span>
-          </div>
-        )}
-        <div className="flex-carousel__live" aria-live="polite" aria-atomic="true">
-          {`${label}, ${active + 1} of ${list.length}`}
-        </div>
+    <div
+      className={`depth-carousel-wrapper ${className}`.trim()}
+      style={style}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Eight Technical Domains Carousel"
+    >
+      {/* 3D Depth Stage */}
+      <div className="depth-stage">
+        {items.map((item, index) => {
+          // Calculate relative circular distance (-4 to +4)
+          let diff = index - active;
+          while (diff > count / 2) diff -= count;
+          while (diff < -count / 2) diff += count;
+
+          const isCenter = diff === 0;
+          const isImmediate = Math.abs(diff) === 1;
+          const isSecondary = Math.abs(diff) === 2;
+          const isVisible = Math.abs(diff) <= 2;
+
+          // 3D positioning parameters
+          let translateX = 0;
+          let translateZ = 0;
+          let rotateY = 0;
+          let scale = 1;
+          let opacity = 0;
+          let zIndex = 1;
+
+          if (isCenter) {
+            translateX = 0;
+            translateZ = 0;
+            rotateY = 0;
+            scale = 1;
+            opacity = 1;
+            zIndex = 20;
+          } else if (isImmediate) {
+            translateX = diff > 0 ? 330 : -330;
+            translateZ = -90;
+            rotateY = diff > 0 ? -12 : 12;
+            scale = 0.88;
+            opacity = 0.78;
+            zIndex = 10;
+          } else if (isSecondary) {
+            translateX = diff > 0 ? 590 : -590;
+            translateZ = -200;
+            rotateY = diff > 0 ? -22 : 22;
+            scale = 0.74;
+            opacity = 0.35;
+            zIndex = 5;
+          } else {
+            translateX = diff > 0 ? 800 : -800;
+            translateZ = -300;
+            rotateY = diff > 0 ? -30 : 30;
+            scale = 0.6;
+            opacity = 0;
+            zIndex = 1;
+          }
+
+          const accent = TRACK_ACCENTS[index % TRACK_ACCENTS.length];
+
+          return (
+            <motion.div
+              key={item.title}
+              className={`depth-card-slot ${isCenter ? 'is-active' : ''}`}
+              initial={false}
+              animate={{
+                x: translateX,
+                z: translateZ,
+                rotateY: rotateY,
+                scale: scale,
+                opacity: isVisible ? opacity : 0,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 240,
+                damping: 26,
+                mass: 0.8,
+              }}
+              style={{
+                zIndex,
+                pointerEvents: isVisible ? 'auto' : 'none',
+              }}
+              onClick={() => {
+                if (!isCenter) {
+                  handleGoTo(index);
+                } else {
+                  onSelect?.(index, item);
+                }
+              }}
+            >
+              <div
+                className="depth-card"
+                style={{
+                  borderColor: isCenter ? accent.border : 'rgba(228, 228, 231, 0.9)',
+                }}
+              >
+                {/* Top decorative gradient line */}
+                <div
+                  className="depth-card__accent-bar"
+                  style={{ background: accent.iconBg }}
+                />
+
+                {/* Card Header with Track Pill and Watermark */}
+                <div className="depth-card__header">
+                  <div
+                    className="depth-card__badge"
+                    style={{
+                      backgroundColor: accent.badgeBg,
+                      color: accent.badgeText,
+                      borderColor: accent.border,
+                    }}
+                  >
+                    <span className="depth-card__dot" style={{ backgroundColor: accent.border }} />
+                    <span>TRACK {String(index + 1).padStart(2, '0')}</span>
+                  </div>
+
+                  <span className="depth-card__watermark">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                {/* Card Main Content */}
+                <div className="depth-card__body">
+                  <h3 className="depth-card__title">
+                    {item.title}
+                  </h3>
+
+                  {item.subtitle && (
+                    <p
+                      className="depth-card__subtitle"
+                      style={{ color: accent.badgeText }}
+                    >
+                      {item.subtitle}
+                    </p>
+                  )}
+
+                  {item.description && (
+                    <p className="depth-card__desc">
+                      {item.description}
+                    </p>
+                  )}
+
+                  {/* Topic scope tags */}
+                  {item.tags && item.tags.length > 0 && (
+                    <div className="depth-card__tags">
+                      {item.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="depth-card__tag">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Footer */}
+                <div className="depth-card__footer">
+                  <span className="depth-card__brand">IM3-2027 · PCU PUNE</span>
+                  <div
+                    className="depth-card__btn-arrow"
+                    style={{ background: isCenter ? accent.iconBg : '#e4e4e7' }}
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      style={{ color: isCenter ? '#ffffff' : '#52525b' }}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
+      {/* Center Caption / Progress Counter */}
+      {captions && currentItem && (
+        <div className="depth-carousel__bottom-bar">
+          <div className="depth-carousel__counter">
+            <span className="font-mono font-bold text-neutral-900">
+              {String(active + 1).padStart(2, '0')}
+            </span>
+            <span className="text-neutral-400">/</span>
+            <span className="text-neutral-500 font-mono">
+              {String(count).padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Button-only Sliding Controls */}
       {showNavButtons && (
-        <div className="flex-carousel__controls">
+        <div className="depth-carousel__controls">
           <button
             type="button"
-            className="flex-carousel__btn"
-            onClick={() => engineRef.current?.step(-1)}
+            className="depth-carousel__btn"
+            onClick={handlePrev}
             aria-label="Previous Track"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>Previous Track</span>
           </button>
+
           <button
             type="button"
-            className="flex-carousel__btn"
-            onClick={() => engineRef.current?.step(1)}
+            className="depth-carousel__btn depth-carousel__btn--next"
+            onClick={handleNext}
             aria-label="Next Track"
           >
             <span>Next Track</span>
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </button>
