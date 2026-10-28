@@ -1,7 +1,8 @@
 {
+  "title": "IM3-2027 | International Master-Mind Meet",
   "description": "Explore IM3-2027 conference tracks, dates, proposed fees, committees, and venue details to help researchers and delegates plan participation.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,

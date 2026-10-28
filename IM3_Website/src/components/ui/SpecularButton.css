@@ -1,0 +1,156 @@
+.specular-button {
+  --sb-radius: 14px;
+  --sb-tint: #ffffff;
+  --sb-tint-opacity: 0.08;
+  --sb-blur: 8px;
+  --sb-text-color: #ffffff;
+  --sb-line-color: #ffffff;
+  --sb-base-color: rgba(255, 255, 255, 0.15);
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --specular-opacity: 0.35;
+  --specular-angle: 0deg;
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55em;
+  margin: 0;
+  padding: 10px 22px;
+  border-radius: var(--sb-radius);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+  color: var(--sb-text-color);
+  background: rgba(255, 255, 255, var(--sb-tint-opacity, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(var(--sb-blur));
+  backdrop-filter: blur(var(--sb-blur));
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background 0.25s ease,
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+  overflow: visible;
+}
+
+/* Dynamic specular light edge that follows mouse */
+.specular-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--sb-radius) + 2px);
+  padding: 1.5px;
+  background: radial-gradient(
+    140px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.35) 40%,
+    rgba(255, 255, 255, 0.05) 75%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: var(--specular-opacity);
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+/* Soft ambient glow behind button */
+.specular-button::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: calc(var(--sb-radius) + 6px);
+  background: radial-gradient(
+    160px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(185, 28, 44, 0.3) 50%,
+    transparent 80%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(6px);
+}
+
+.specular-button:hover {
+  background: rgba(255, 255, 255, calc(var(--sb-tint-opacity, 0.08) + 0.06));
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.specular-button:hover::before {
+  --specular-opacity: 1;
+}
+
+.specular-button:hover::after {
+  opacity: 0.8;
+}
+
+.specular-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.specular-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 3px;
+}
+
+.specular-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Sizes */
+.specular-button--sm {
+  padding: 8px 18px;
+  font-size: 0.8125rem;
+  --sb-radius: 12px;
+}
+
+.specular-button--md {
+  padding: 12px 24px;
+  font-size: 0.9375rem;
+  --sb-radius: 14px;
+}
+
+.specular-button--lg {
+  padding: 15px 32px;
+  font-size: 1.05rem;
+  --sb-radius: 16px;
+  font-weight: 700;
+}
+
+/* Featured / Accent variant */
+.specular-button--featured {
+  background: linear-gradient(135deg, rgba(185, 28, 44, 0.85) 0%, rgba(127, 20, 32, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 28px -4px rgba(185, 28, 44, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.specular-button--featured:hover {
+  background: linear-gradient(135deg, rgba(200, 32, 50, 0.95) 0%, rgba(145, 24, 38, 1) 100%);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 12px 32px -4px rgba(185, 28, 44, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.specular-button__label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
