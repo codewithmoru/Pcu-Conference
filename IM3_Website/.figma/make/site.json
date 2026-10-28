@@ -1,0 +1,10 @@
+{
+  "description": "Explore IM3-2027 conference tracks, dates, proposed fees, committees, and venue details to help researchers and delegates plan participation.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
