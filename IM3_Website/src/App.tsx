@@ -5,11 +5,10 @@ import SpecularButton from '@/components/ui/SpecularButton';
 
 const nav = [
   ['About', 'about'],
-  ['Tracks', 'tracks'],
-  ['Call for Papers', 'papers'],
   ['Dates', 'dates'],
   ['Registration', 'registration'],
   ['Committees', 'committees'],
+  ['Advisory Committee', 'advisory-committee'],
   ['Contact', 'contact'],
 ];
 
@@ -206,8 +205,16 @@ export default function App() {
                 {label}
               </a>
             ))}
+            <a
+              className="mobile-nav-cta"
+              href="#tracks"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span>Call for papers</span>
+              <Arrow />
+            </a>
           </nav>
-          <a className="nav-cta" href="#papers">
+          <a className="nav-cta" href="#tracks" title="Tracks & Call for Papers">
             <span>Call for papers</span>
             <Arrow />
           </a>
@@ -310,7 +317,7 @@ export default function App() {
         <section className="section tracks" id="tracks">
           <div className="max-w-[1240px] mx-auto">
             <SectionHead
-              eyebrow="02 / Research across disciplines"
+              eyebrow="02 / Technical Tracks · Call for papers"
               title="Eight domains. One shared frontier."
               note="Explore the eight technical tracks for IM3-2027. Use the previous / next buttons or click any domain tab below to inspect the track cards."
             />
@@ -545,8 +552,6 @@ export default function App() {
               'Patrons',
               'General & Organizing Chairs',
               'Technical & Support Leadership',
-              'National Advisory Committee',
-              'International Advisory Committee',
               'Proposed Eminent / International Invitees',
             ].map((group, index) => (
               <div key={group} data-aos="fade-right" data-aos-delay={String(index * 60)}>
@@ -555,6 +560,57 @@ export default function App() {
                 <small>Source details pending</small>
               </div>
             ))}
+          </div>
+
+          {/* Dedicated Advisory Committee Section */}
+          <div id="advisory-committee" className="mt-14 pt-10 border-t border-neutral-200" data-aos="fade-up">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+              <div>
+                <p className="eyebrow">Academic & Scientific Governance</p>
+                <h3 className="text-2xl md:text-3xl font-bold font-display text-neutral-900 mt-1">
+                  Advisory Committee
+                </h3>
+              </div>
+              <p className="text-xs md:text-sm text-neutral-500 max-w-md">
+                Guiding academic rigour, track governance, and international peer engagement for IM3-2027.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm hover:border-[#b91c2c]/40 transition-all hover:shadow-md">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
+                    National Board
+                  </span>
+                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
+                </div>
+                <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">National Advisory Committee</h4>
+                <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
+                  Distinguished professors, senior IEEE members, research council directors, and academicians from premier national institutes, IITs, NITs, and central universities across India.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Distinguished National Academicians & Researchers</span>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm hover:border-[#b91c2c]/40 transition-all hover:shadow-md">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
+                    International Board
+                  </span>
+                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
+                </div>
+                <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">International Advisory Committee</h4>
+                <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
+                  Renowned international scholars, IEEE Fellows, global university deans, and research leaders providing strategic insight and global peer review alignment.
+                </p>
+                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Global Research Pioneers & IEEE Fellows</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -664,6 +720,14 @@ export default function App() {
               <div className="footer-specular-nav">
                 <p className="footer-nav-label">Conference Navigation</p>
                 <div className="footer-buttons-group">
+                  <SpecularButton
+                    href="#tracks"
+                    size="sm"
+                    radius={12}
+                    followMouse
+                  >
+                    Call for Papers
+                  </SpecularButton>
                   {nav.map(([label, id]) => (
                     <SpecularButton
                       key={id}
