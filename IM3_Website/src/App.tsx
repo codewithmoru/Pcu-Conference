@@ -2,18 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import HowItWorks, { type Step } from '@/components/ui/how-it-works';
 import FlexCarousel, { type FlexCarouselRef, EIGHT_DOMAINS_ITEMS } from '@/components/ui/FlexCarousel';
 import SpecularButton from '@/components/ui/SpecularButton';
-import AdvisoryCommitteePage from '@/components/AdvisoryCommitteePage';
-
-const normalizePath = (path: string) => {
-  const clean = path.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
-  return clean;
-};
+import Committee from "./Committee";
+import CommitteePage from "./CommitteePage";
 
 const nav = [
   ['About', 'about'],
   ['Dates', 'dates'],
   ['Registration', 'registration'],
-  ['Committees', 'committees'],
+  ['Committees', '/committees'],
   ['Advisory Committee', 'advisory-committee'],
   ['Contact', 'contact'],
 ];
@@ -99,10 +95,10 @@ function Arrow({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-function Brand({ href = '#top', onClick }: { href?: string; onClick?: (e: React.MouseEvent) => void }) {
+function Brand() {
   return (
-    <a className="brand" href={href} onClick={onClick} aria-label="IM3-2027 home">
-      <img src="/pcu-conference-logo.png" alt="Pimpri Chinchwad University" />
+    <a className="brand" href="#top" aria-label="IM3-2027 home">
+      <img src="/logo2.webp" alt="Pimpri Chinchwad University" />
     </a>
   );
 }
@@ -162,91 +158,154 @@ function SectionHead({ eyebrow, title, note }: { eyebrow: string; title: string;
 }
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(() => normalizePath(window.location.pathname));
-  const isAdvisoryPage = currentPath === '/advisory-committee';
+
+const committeeGroups = [
+  {
+    title: 'Chief Patrons',
+    members: [
+      {
+        name: 'Padma Bhushan Dr. Vijay P. Bhatkar',
+        designation: 'Founder Director General, C-DAC',
+      },
+      {
+        name: 'Padma Shri Prof. Dr. Ganapati D. Yadav',
+        designation: 'Former Vice-Chancellor, ICT Mumbai',
+      },
+      {
+        name: 'Prof. Shekhar C. Mande',
+        designation: 'President, INSA; Former Director General, CSIR',
+      },
+      {
+        name: 'Padma Shri Shri Prataprao Pawar',
+        designation: 'Indian Industrialist; Chairman, Sakal Media',
+      },
+    ],
+  },
+  {
+    title: 'Patrons',
+    members: [
+      {
+        name: "Honourable Harshwardhan S. Patil",
+        designation: 'Chancellor, PCU; Trustee, PCET',
+      },
+      {
+        name: 'Shri Dnyaneshwar P. Landge',
+        designation: 'Chairman, PCET',
+      },
+      {
+        name: 'Smt. Padma M. Bhosale',
+        designation: 'Vice Chairperson, PCET',
+      },
+      {
+        name: 'Shri Vitthal S. Kalbhor',
+        designation: 'Secretary, PCET',
+      },
+      {
+        name: 'Shri Shantaram D. Garade',
+        designation: 'Treasurer, PCET',
+      },
+      {
+        name: 'Dr. Girish Desai',
+        designation: 'Executive Director, PCET',
+      },
+      {
+        name: 'Dr. Santosh S. Sonavane',
+        designation: 'Vice-Chancellor, PCU',
+      },
+    ],
+  },
+  {
+    title: 'General & Organizing Chairs',
+    members: [
+      {
+        name: 'Dr. Bharat Kale',
+        designation: 'General Chair; Director, R&D, PCU',
+        image: 'DrBharatKale.png',
+      },
+      {
+        name: 'Dr. Shankar Deosarkar',
+        designation:
+          'Co-General Chair & International Relations Chair; Director, IRO, PCU',
+        image: 'DrShankarDeosarkar.png',
+      },
+      {
+        name: 'Dr. Anil Maheshwari',
+        designation: 'Organizing Secretary',
+      },
+      {
+        name: 'Dr. Sachin Pawar',
+        designation: 'Organizing Secretary',
+      },
+      {
+        name: 'Dr. Vijay Patil',
+        designation: 'Organizing Co-Secretary',
+      },
+      {
+        name: 'Dr. Ramdar Biradar',
+        designation: 'Organizing Co-Secretary',
+      },
+      {
+        name: 'Dr. Rahul G. Sonkamble',
+        designation: 'Conference Convener & Organizing Chair',
+        image: 'DrRahulSonkamble.png',
+      },
+      {
+        name: 'Dr. Swati Shirke-Deshmukh',
+        designation: 'Conference Co-Convener & Co-Organizing Chair',
+        image: 'DrSwatiDeshmukh.png',
+      },
+    ],
+  },
+  {
+    title: 'Technical & Support Leadership',
+    members: [
+      {
+        name: 'Dr. Jaydeep Patil & Dr. Amit Patil',
+        designation: 'Technical Program Chair',
+      },
+      {
+        name: 'Dr. Amit Gadekar & Dr. Bhushan Chaudhari',
+        designation: 'Technical Program Co-Chair',
+      },
+      {
+        name: 'Dr. Anand Rajavat & Dr. Abhijeet Banubakode',
+        designation: 'Publication Chair',
+      },
+      {
+        name: 'Mr. Shankar Patil & Ms. Shalaka Sarode',
+        designation: 'Finance Chair',
+      },
+      {
+        name: 'Mr. Satpalshingh Rajput',
+        designation: 'Co-Finance Chair',
+      },
+      {
+        name: 'Dr. Pranav Charkha',
+        designation: 'Sponsorship Chair',
+      },
+      {
+        name: 'Mr. Deepak Pandey',
+        designation: 'Hospitality Chair',
+      },
+      {
+        name: 'Mr. Mahesh Mahajan',
+        designation: 'IT Support Chair',
+      },
+      {
+        name: 'Mr. Shivam Sarsar',
+        designation: 'Promotion, Media & Marketing Chair',
+      },
+    ],
+  },
+];
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDomainIndex, setActiveDomainIndex] = useState(0);
+  const [activeCommitteeIndex, setActiveCommitteeIndex] = useState(0);
   const carouselRef = useRef<FlexCarouselRef>(null);
-
-  // Document Title
-  useEffect(() => {
-    if (isAdvisoryPage) {
-      document.title = 'Advisory Committee | IM3-2027 | PCU Pune';
-    } else {
-      document.title = 'IM3-2027 | International Master-Mind Meet | PCU Pune';
-    }
-  }, [isAdvisoryPage]);
-
-  // Handle browser popstate (back/forward navigation)
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = normalizePath(window.location.pathname);
-      setCurrentPath(path);
-      if (window.location.hash) {
-        setTimeout(() => {
-          const el = document.querySelector(window.location.hash);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 60);
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Handle in-page hash scroll on initial load if present
-  useEffect(() => {
-    if (window.location.hash && !isAdvisoryPage) {
-      setTimeout(() => {
-        const el = document.querySelector(window.location.hash);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [isAdvisoryPage]);
-
-  const navigateTo = (to: string) => {
-    setMenuOpen(false);
-
-    if (to.startsWith('/#')) {
-      const hash = to.slice(1);
-      window.history.pushState({}, '', to);
-      setCurrentPath('/');
-      setTimeout(() => {
-        const el = document.querySelector(hash);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 60);
-      return;
-    }
-
-    if (to === '/' || to === '/#top') {
-      window.history.pushState({}, '', '/');
-      setCurrentPath('/');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    if (to === '/advisory-committee') {
-      window.history.pushState({}, '', '/advisory-committee');
-      setCurrentPath('/advisory-committee');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    if (to.startsWith('#')) {
-      const el = document.querySelector(to);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
 
   // AOS (Animate On Scroll) Observer
   useEffect(() => {
-    if (isAdvisoryPage) return;
-
     const aosElements = document.querySelectorAll<HTMLElement>('[data-aos]');
     const observer = new IntersectionObserver(
       (entries) => {
@@ -265,7 +324,22 @@ export default function App() {
     return () => {
       observer.disconnect();
     };
-  }, [isAdvisoryPage]);
+  }, []);
+  // Scroll directly to the requested homepage section
+  useEffect(() => {
+    const hash = window.location.hash;
+
+    if (!hash) return;
+
+    requestAnimationFrame(() => {
+      document.querySelector(hash)?.scrollIntoView({
+        behavior: "instant",
+        block: "start",
+      });
+    });
+  }, []);
+
+
 
   const handleDomainSelect = (index: number) => {
     setActiveDomainIndex(index);
@@ -273,6 +347,7 @@ export default function App() {
   };
 
   const currentDomain = EIGHT_DOMAINS_ITEMS[activeDomainIndex] || EIGHT_DOMAINS_ITEMS[0];
+  
 
   return (
     <div id="top">
@@ -283,68 +358,27 @@ export default function App() {
       {/* Header */}
       <header className="site-header">
         <div className="nav-shell">
-          <Brand
-            href={isAdvisoryPage ? '/' : '#top'}
-            onClick={(e) => {
-              if (isAdvisoryPage) {
-                e.preventDefault();
-                navigateTo('/');
-              }
-            }}
-          />
+          <Brand />
           <nav className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Primary navigation">
-            {nav.map(([label, id]) => {
-              const isAdvisory = id === 'advisory-committee';
-              const href = isAdvisory
-                ? '/advisory-committee'
-                : (isAdvisoryPage ? `/#${id}` : `#${id}`);
-
-              return (
-                <a
-                  key={id}
-                  href={href}
-                  className={isAdvisory && isAdvisoryPage ? 'nav-link-active' : undefined}
-                  onClick={(e) => {
-                    setMenuOpen(false);
-                    if (isAdvisory) {
-                      e.preventDefault();
-                      navigateTo('/advisory-committee');
-                    } else if (isAdvisoryPage) {
-                      e.preventDefault();
-                      navigateTo(`/#${id}`);
-                    }
-                  }}
-                >
-                  {label}
-                </a>
-              );
-            })}
+            {nav.map(([label, id]) => (
+              <a
+              key={id}
+              href={id.startsWith("/") ? id : `#${id}`}
+              onClick={() => setMenuOpen(false)}
+            >
+                {label}
+              </a>
+            ))}
             <a
               className="mobile-nav-cta"
-              href={isAdvisoryPage ? '/#tracks' : '#tracks'}
-              onClick={(e) => {
-                setMenuOpen(false);
-                if (isAdvisoryPage) {
-                  e.preventDefault();
-                  navigateTo('/#tracks');
-                }
-              }}
+              href="#tracks"
+              onClick={() => setMenuOpen(false)}
             >
               <span>Call for papers</span>
               <Arrow />
             </a>
           </nav>
-          <a
-            className="nav-cta"
-            href={isAdvisoryPage ? '/#tracks' : '#tracks'}
-            title="Tracks & Call for Papers"
-            onClick={(e) => {
-              if (isAdvisoryPage) {
-                e.preventDefault();
-                navigateTo('/#tracks');
-              }
-            }}
-          >
+          <a className="nav-cta" href="#tracks" title="Tracks & Call for Papers">
             <span>Call for papers</span>
             <Arrow />
           </a>
@@ -361,10 +395,7 @@ export default function App() {
         </div>
       </header>
 
-      {isAdvisoryPage ? (
-        <AdvisoryCommitteePage navigateTo={navigateTo} />
-      ) : (
-        <main id="main">
+      <main id="main">
         {/* Hero */}
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-grid">
@@ -662,41 +693,12 @@ export default function App() {
           </div>
         </section>
 
-        {/* 07 / Committees */}
-        <section className="section committees" id="committees">
-          <SectionHead
-            eyebrow="07 / Conference leadership"
-            title="Convened with purpose."
-            note="The full committee directory will be populated with exact names, titles and affiliations from the brochure when supplied."
-          />
-          <div className="leadership" data-aos="fade-up" data-aos-delay="100">
-            <article>
-              <p>Conference Convener</p>
-              <h3>Dr. Rahul G. Sonkamble</h3>
-            </article>
-            <article>
-              <p>Conference Co-Convener</p>
-              <h3>Dr. Swati Shirke-Deshmukh</h3>
-            </article>
-          </div>
-          <div className="committee-groups" data-aos="fade-up" data-aos-delay="200">
-            {[
-              'Chief Patrons',
-              'Patrons',
-              'General & Organizing Chairs',
-              'Technical & Support Leadership',
-              'Proposed Eminent / International Invitees',
-            ].map((group, index) => (
-              <div key={group} data-aos="fade-right" data-aos-delay={String(index * 60)}>
-                <span>Directory</span>
-                <strong>{group}</strong>
-                <small>Source details pending</small>
-              </div>
-            ))}
-          </div>
-
-          {/* Dedicated Advisory Committee Section */}
-          <div id="advisory-committee" className="mt-14 pt-10 border-t border-neutral-200" data-aos="fade-up">
+{/* 07 / Committees */}
+<section className="section committees" id="committees">
+  <CommitteePage />
+</section>
+{/* Dedicated Advisory Committee Section */}
+<div id="advisory-committee" className="mt-14 pt-10 border-t border-neutral-200" data-aos="fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
               <div>
                 <p className="eyebrow">Academic & Scientific Governance</p>
@@ -715,28 +717,15 @@ export default function App() {
                   <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
                     National Board
                   </span>
-                  <span className="text-xs font-semibold text-neutral-400">19 Members</span>
+                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
                 </div>
                 <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">National Advisory Committee</h4>
                 <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
                   Distinguished professors, senior IEEE members, research council directors, and academicians from premier national institutes, IITs, NITs, and central universities across India.
                 </p>
-                <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>IITs, NITs, IIITs & Research Labs</span>
-                  </div>
-                  <a
-                    href="/advisory-committee"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigateTo('/advisory-committee');
-                    }}
-                    className="text-xs font-bold text-[#b91c2c] hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>View Directory</span>
-                    <Arrow className="w-3 h-3" />
-                  </a>
+                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Distinguished National Academicians & Researchers</span>
                 </div>
               </div>
 
@@ -745,47 +734,20 @@ export default function App() {
                   <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
                     International Board
                   </span>
-                  <span className="text-xs font-semibold text-neutral-400">13 Members</span>
+                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
                 </div>
                 <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">International Advisory Committee</h4>
                 <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
                   Renowned international scholars, IEEE Fellows, global university deans, and research leaders providing strategic insight and global peer review alignment.
                 </p>
-                <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Global Pioneers & IEEE Fellows</span>
-                  </div>
-                  <a
-                    href="/advisory-committee"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigateTo('/advisory-committee');
-                    }}
-                    className="text-xs font-bold text-[#b91c2c] hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>View Directory</span>
-                    <Arrow className="w-3 h-3" />
-                  </a>
+                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Global Research Pioneers & IEEE Fellows</span>
                 </div>
               </div>
             </div>
-
-            <div className="mt-6 text-center">
-              <a
-                href="/advisory-committee"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigateTo('/advisory-committee');
-                }}
-                className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#b91c2c] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#7f1420] transition-colors"
-              >
-                <span>Explore Full Advisory Committee Page</span>
-                <Arrow className="w-3.5 h-3.5" />
-              </a>
-            </div>
           </div>
-        </section>
+        
 
         {/* 08 / Industry engagement */}
         <section className="engagement">
@@ -844,25 +806,14 @@ export default function App() {
           </div>
         </section>
       </main>
-      )}
 
       {/* Footer with PCU Conference Logo on left & Specular Buttons for hyperlinking */}
       <footer className="footer-container">
         <div className="footer-inner">
           <div className="footer-main-grid">
             {/* Left side: PCU conference logo & branding */}
-            <div className="footer-left" data-aos={isAdvisoryPage ? undefined : "fade-right"}>
-              <a
-                href={isAdvisoryPage ? '/' : '#top'}
-                onClick={(e) => {
-                  if (isAdvisoryPage) {
-                    e.preventDefault();
-                    navigateTo('/');
-                  }
-                }}
-                className="footer-logo-card"
-                aria-label="IM3-2027 home"
-              >
+            <div className="footer-left" data-aos="fade-right">
+              <a href="#top" className="footer-logo-card" aria-label="IM3-2027 home">
                 <img
                   src="/pcu-conference-logo.png"
                   alt="PCU Conference Logo - Pimpri Chinchwad University"
@@ -884,7 +835,7 @@ export default function App() {
             </div>
 
             {/* Right side: Specular Buttons for hyperlinking */}
-            <div className="footer-right" data-aos={isAdvisoryPage ? undefined : "fade-left"} data-aos-delay={isAdvisoryPage ? undefined : "150"}>
+            <div className="footer-right" data-aos="fade-left" data-aos-delay="150">
               <div className="footer-cta-wrapper">
                 <p className="footer-cta-label">Featured Destination</p>
                 <SpecularButton
@@ -905,46 +856,33 @@ export default function App() {
                 <p className="footer-nav-label">Conference Navigation</p>
                 <div className="footer-buttons-group">
                   <SpecularButton
-                    href={isAdvisoryPage ? '/#tracks' : '#tracks'}
+                    href="#tracks"
                     size="sm"
                     radius={12}
                     followMouse
-                    onClick={(e) => {
-                      if (isAdvisoryPage) {
-                        e.preventDefault();
-                        navigateTo('/#tracks');
-                      }
-                    }}
                   >
                     Call for Papers
                   </SpecularButton>
-                  {nav.map(([label, id]) => {
-                    const isAdvisory = id === 'advisory-committee';
-                    const href = isAdvisory
-                      ? '/advisory-committee'
-                      : (isAdvisoryPage ? `/#${id}` : `#${id}`);
-
-                    return (
-                      <SpecularButton
-                        key={id}
-                        href={href}
-                        size="sm"
-                        radius={12}
-                        followMouse
-                        onClick={(e) => {
-                          if (isAdvisory) {
-                            e.preventDefault();
-                            navigateTo('/advisory-committee');
-                          } else if (isAdvisoryPage) {
-                            e.preventDefault();
-                            navigateTo(`/#${id}`);
-                          }
-                        }}
-                      >
-                        {label}
-                      </SpecularButton>
-                    );
-                  })}
+                  {nav.map(([label, id]) => (
+                    <SpecularButton
+                      key={id}
+                      href={`#${id}`}
+                      size="sm"
+                      radius={12}
+                      followMouse
+                    >
+                      {label}
+                    </SpecularButton>
+                  ))}
+                  <SpecularButton
+                  href="/committees"
+                  size="sm"
+                  radius={12}
+                  followMouse
+                >
+                  Committee
+                </SpecularButton>
+                  
                   <SpecularButton
                     href="https://www.google.com/maps/search/?api=1&query=Pimpri+Chinchwad+University+Sate+Maval+Pune+Maharashtra+412206"
                     target="_blank"
@@ -960,7 +898,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="footer-bottom-bar" data-aos={isAdvisoryPage ? undefined : "fade-up"} data-aos-delay={isAdvisoryPage ? undefined : "200"}>
+
+          <div className="footer-bottom-bar" data-aos="fade-up" data-aos-delay="200">
             <p>© 2027 International Master-Mind Meet (IM3-2027). All rights reserved.</p>
             <p>PCET’s Pimpri Chinchwad University (PCU), Pune, India · Technical Co-Sponsorship Requested with IEEE Maharashtra Section</p>
           </div>
