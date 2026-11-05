@@ -1,18 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import HowItWorks, { type Step } from '@/components/ui/how-it-works';
 import FlexCarousel, { type FlexCarouselRef, EIGHT_DOMAINS_ITEMS } from '@/components/ui/FlexCarousel';
-import SpecularButton from '@/components/ui/SpecularButton';
-import Committee from "./Committee";
-import CommitteePage from "./CommitteePage";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
-const nav = [
-  ['About', 'about'],
-  ['Dates', 'dates'],
-  ['Registration', 'registration'],
-  ['Committees', '/committees'],
-  ['Advisory Committee', 'advisory-committee'],
-  ['Contact', 'contact'],
-];
+// Subpage components
+import AboutPage from '@/pages/AboutPage';
+import DatesPage from '@/pages/DatesPage';
+import RegistrationPage from '@/pages/RegistrationPage';
+import CommitteesPage from '@/pages/CommitteesPage';
+import AdvisoryCommitteePage from '@/components/AdvisoryCommitteePage';
+
+export type PageRoute = '/' | '/about' | '/dates' | '/registration' | '/committees' | '/advisory-committee';
 
 const conferenceDates: Step[] = [
   {
@@ -95,14 +94,6 @@ function Arrow({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-function Brand() {
-  return (
-    <a className="brand" href="#top" aria-label="IM3-2027 home">
-      <img src="/logo2.webp" alt="Pimpri Chinchwad University" />
-    </a>
-  );
-}
-
 function ConvergenceGraphic() {
   const nodes = [
     ['Artificial Intelligence', 'node-1'],
@@ -157,152 +148,52 @@ function SectionHead({ eyebrow, title, note }: { eyebrow: string; title: string;
   );
 }
 
+function getInitialRoute(): PageRoute {
+  if (typeof window === 'undefined') return '/';
+  const hash = window.location.hash.toLowerCase();
+  const path = window.location.pathname.toLowerCase();
+
+  if (hash.startsWith('#/about') || path === '/about') return '/about';
+  if (hash.startsWith('#/dates') || path === '/dates') return '/dates';
+  if (hash.startsWith('#/registration') || path === '/registration') return '/registration';
+  if (
+    hash.startsWith('#/committees') ||
+    path === '/committees' ||
+    hash.startsWith('#/leadership') ||
+    path === '/leadership'
+  ) {
+    return '/committees';
+  }
+  if (
+    hash.startsWith('#/advisory-committee') ||
+    path === '/advisory-committee' ||
+    hash.startsWith('#/advisory') ||
+    path === '/advisory'
+  ) {
+    return '/advisory-committee';
+  }
+  return '/';
+}
+
 export default function App() {
-
-const committeeGroups = [
-  {
-    title: 'Chief Patrons',
-    members: [
-      {
-        name: 'Padma Bhushan Dr. Vijay P. Bhatkar',
-        designation: 'Founder Director General, C-DAC',
-      },
-      {
-        name: 'Padma Shri Prof. Dr. Ganapati D. Yadav',
-        designation: 'Former Vice-Chancellor, ICT Mumbai',
-      },
-      {
-        name: 'Prof. Shekhar C. Mande',
-        designation: 'President, INSA; Former Director General, CSIR',
-      },
-      {
-        name: 'Padma Shri Shri Prataprao Pawar',
-        designation: 'Indian Industrialist; Chairman, Sakal Media',
-      },
-    ],
-  },
-  {
-    title: 'Patrons',
-    members: [
-      {
-        name: "Honourable Harshwardhan S. Patil",
-        designation: 'Chancellor, PCU; Trustee, PCET',
-      },
-      {
-        name: 'Shri Dnyaneshwar P. Landge',
-        designation: 'Chairman, PCET',
-      },
-      {
-        name: 'Smt. Padma M. Bhosale',
-        designation: 'Vice Chairperson, PCET',
-      },
-      {
-        name: 'Shri Vitthal S. Kalbhor',
-        designation: 'Secretary, PCET',
-      },
-      {
-        name: 'Shri Shantaram D. Garade',
-        designation: 'Treasurer, PCET',
-      },
-      {
-        name: 'Dr. Girish Desai',
-        designation: 'Executive Director, PCET',
-      },
-      {
-        name: 'Dr. Santosh S. Sonavane',
-        designation: 'Vice-Chancellor, PCU',
-      },
-    ],
-  },
-  {
-    title: 'General & Organizing Chairs',
-    members: [
-      {
-        name: 'Dr. Bharat Kale',
-        designation: 'General Chair; Director, R&D, PCU',
-        image: 'DrBharatKale.png',
-      },
-      {
-        name: 'Dr. Shankar Deosarkar',
-        designation:
-          'Co-General Chair & International Relations Chair; Director, IRO, PCU',
-        image: 'DrShankarDeosarkar.png',
-      },
-      {
-        name: 'Dr. Anil Maheshwari',
-        designation: 'Organizing Secretary',
-      },
-      {
-        name: 'Dr. Sachin Pawar',
-        designation: 'Organizing Secretary',
-      },
-      {
-        name: 'Dr. Vijay Patil',
-        designation: 'Organizing Co-Secretary',
-      },
-      {
-        name: 'Dr. Ramdar Biradar',
-        designation: 'Organizing Co-Secretary',
-      },
-      {
-        name: 'Dr. Rahul G. Sonkamble',
-        designation: 'Conference Convener & Organizing Chair',
-        image: 'DrRahulSonkamble.png',
-      },
-      {
-        name: 'Dr. Swati Shirke-Deshmukh',
-        designation: 'Conference Co-Convener & Co-Organizing Chair',
-        image: 'DrSwatiDeshmukh.png',
-      },
-    ],
-  },
-  {
-    title: 'Technical & Support Leadership',
-    members: [
-      {
-        name: 'Dr. Jaydeep Patil & Dr. Amit Patil',
-        designation: 'Technical Program Chair',
-      },
-      {
-        name: 'Dr. Amit Gadekar & Dr. Bhushan Chaudhari',
-        designation: 'Technical Program Co-Chair',
-      },
-      {
-        name: 'Dr. Anand Rajavat & Dr. Abhijeet Banubakode',
-        designation: 'Publication Chair',
-      },
-      {
-        name: 'Mr. Shankar Patil & Ms. Shalaka Sarode',
-        designation: 'Finance Chair',
-      },
-      {
-        name: 'Mr. Satpalshingh Rajput',
-        designation: 'Co-Finance Chair',
-      },
-      {
-        name: 'Dr. Pranav Charkha',
-        designation: 'Sponsorship Chair',
-      },
-      {
-        name: 'Mr. Deepak Pandey',
-        designation: 'Hospitality Chair',
-      },
-      {
-        name: 'Mr. Mahesh Mahajan',
-        designation: 'IT Support Chair',
-      },
-      {
-        name: 'Mr. Shivam Sarsar',
-        designation: 'Promotion, Media & Marketing Chair',
-      },
-    ],
-  },
-];
-
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [currentRoute, setCurrentRoute] = useState<PageRoute>(getInitialRoute);
   const [activeDomainIndex, setActiveDomainIndex] = useState(0);
-  const [activeCommitteeIndex, setActiveCommitteeIndex] = useState(0);
   const carouselRef = useRef<FlexCarouselRef>(null);
+
+  // Sync route on popstate and hashchange
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentRoute(getInitialRoute());
+    };
+
+    window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('popstate', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
 
   // AOS (Animate On Scroll) Observer
   useEffect(() => {
@@ -324,22 +215,44 @@ const committeeGroups = [
     return () => {
       observer.disconnect();
     };
-  }, []);
-  // Scroll directly to the requested homepage section
+  }, [currentRoute]);
+
+  // Handle direct in-page anchor scroll on first load
   useEffect(() => {
     const hash = window.location.hash;
-
-    if (!hash) return;
+    if (!hash || hash.startsWith('#/')) return;
 
     requestAnimationFrame(() => {
       document.querySelector(hash)?.scrollIntoView({
-        behavior: "instant",
-        block: "start",
+        behavior: 'smooth',
+        block: 'start',
       });
     });
   }, []);
 
+  const navigateTo = (path: string) => {
+    if (path.startsWith('#') && currentRoute === '/') {
+      const el = document.querySelector(path);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+      return;
+    }
 
+    if (path.startsWith('#') && currentRoute !== '/') {
+      window.location.hash = path;
+      setCurrentRoute('/');
+      setTimeout(() => {
+        document.querySelector(path)?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+      return;
+    }
+
+    const targetRoute = path as PageRoute;
+    window.location.hash = targetRoute === '/' ? '' : '#' + targetRoute;
+    setCurrentRoute(targetRoute);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleDomainSelect = (index: number) => {
     setActiveDomainIndex(index);
@@ -347,564 +260,429 @@ const committeeGroups = [
   };
 
   const currentDomain = EIGHT_DOMAINS_ITEMS[activeDomainIndex] || EIGHT_DOMAINS_ITEMS[0];
-  
 
   return (
-    <div id="top">
+    <div id="top" className="min-h-screen flex flex-col justify-between">
       <a className="skip-link" href="#main">
         Skip to content
       </a>
 
-      {/* Header */}
-      <header className="site-header">
-        <div className="nav-shell">
-          <Brand />
-          <nav className={menuOpen ? 'nav-links open' : 'nav-links'} aria-label="Primary navigation">
-            {nav.map(([label, id]) => (
-              <a
-              key={id}
-              href={id.startsWith("/") ? id : `#${id}`}
-              onClick={() => setMenuOpen(false)}
-            >
-                {label}
-              </a>
-            ))}
-            <a
-              className="mobile-nav-cta"
-              href="#tracks"
-              onClick={() => setMenuOpen(false)}
-            >
-              <span>Call for papers</span>
-              <Arrow />
-            </a>
-          </nav>
-          <a className="nav-cta" href="#tracks" title="Tracks & Call for Papers">
-            <span>Call for papers</span>
-            <Arrow />
-          </a>
-          <button
-            className="menu-toggle"
-            type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-expanded={menuOpen}
-            aria-label="Toggle navigation"
-          >
-            <span />
-            <span />
-          </button>
-        </div>
-      </header>
+      {/* Global Navigation Header */}
+      <Navbar currentRoute={currentRoute} navigateTo={navigateTo} />
 
-      <main id="main">
-        {/* Hero */}
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-grid">
-            <div className="hero-art" data-aos="zoom-in" data-aos-duration="1000">
-              <ConvergenceGraphic />
+      {/* Router View Switcher */}
+      {currentRoute === '/about' && <AboutPage navigateTo={navigateTo} />}
+      {currentRoute === '/dates' && <DatesPage navigateTo={navigateTo} />}
+      {currentRoute === '/registration' && <RegistrationPage navigateTo={navigateTo} />}
+      {currentRoute === '/committees' && <CommitteesPage navigateTo={navigateTo} />}
+      {currentRoute === '/advisory-committee' && <AdvisoryCommitteePage navigateTo={navigateTo} />}
+
+      {/* Primary Homepage View */}
+      {currentRoute === '/' && (
+        <main id="main">
+          {/* Hero */}
+          <section className="hero" aria-labelledby="hero-title">
+            <div className="hero-grid">
+              <div className="hero-art" data-aos="zoom-in" data-aos-duration="1000">
+                <ConvergenceGraphic />
+              </div>
+              <div className="hero-meta" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                  <small>When</small>
+                  <strong>6—8 May 2027</strong>
+                </div>
+                <div>
+                  <small>Where</small>
+                  <strong>PCU, Pune, India</strong>
+                </div>
+                <p>
+                  Where disciplines converge.
+                  <br />
+                  Where ideas become innovation.
+                </p>
+              </div>
             </div>
-            <div className="hero-meta" data-aos="fade-up" data-aos-delay="200">
-              <div>
-                <small>When</small>
-                <strong>6—8 May 2027</strong>
+          </section>
+
+          {/* Glance */}
+          <section className="glance" aria-label="Conference at a glance">
+            <div className="glance-inner">
+              <p className="glance-lead" data-aos="fade-right">
+                A global forum for rigorous research and practical innovation.
+              </p>
+              <div data-aos="fade-up" data-aos-delay="100">
+                <strong>08</strong>
+                <span>
+                  Proposed
+                  <br />
+                  technical tracks
+                </span>
               </div>
-              <div>
-                <small>Where</small>
-                <strong>PCU, Pune, India</strong>
+              <div data-aos="fade-up" data-aos-delay="200">
+                <strong>500</strong>
+                <span>
+                  Target full-paper
+                  <br />
+                  submissions
+                </span>
               </div>
+              <div data-aos="fade-up" data-aos-delay="300">
+                <strong>100–120</strong>
+                <span>
+                  Target final
+                  <br />
+                  acceptances
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* 01 / About Section with Learn More Button */}
+          <section className="section about" id="about">
+            <div className="editorial-grid">
+              <SectionHead eyebrow="" title="About The Conference" />
+              <div className="about-copy" data-aos="fade-left" data-aos-delay="150">
+                <p className="lede">
+                  IM3-2027 brings researchers, educators and industry together to explore the space where disciplines meet—and where rigorous ideas become useful innovation.
+                </p>
+                <div className="two-col-copy">
+                  <p>
+                    Hosted by PCET’s Pimpri Chinchwad University, the conference is conceived as an international platform for multidisciplinary research, peer exchange and meaningful academia–industry engagement.
+                  </p>
+                  <p>
+                    The proposed programme combines reviewed oral presentations, poster sessions and collaboration opportunities, with an emphasis on clear methodology, evidence and societal relevance.
+                  </p>
+                </div>
+
+                {/* Learn More Action Row */}
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo('/about')}
+                    className="btn-learn-more"
+                  >
+                    <span>Learn More About IM3-2027 & PCU</span>
+                    <Arrow />
+                  </button>
+                  <a className="text-link" href="#tracks">
+                    <span>Explore Technical Tracks</span>
+                    <Arrow />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 02 / Eight Domains - Visually Stunning Flex Carousel */}
+          <section className="section tracks" id="tracks">
+            <div className="max-w-[1240px] mx-auto">
+              <SectionHead
+                eyebrow=""
+                title="Technical Tracks"
+                note="Explore the eight technical tracks for IM3-2027. Use the previous / next buttons or click any domain tab below to inspect the track cards."
+              />
+
+              {/* Domain Quick-Select Indicator Bar */}
+              <div
+                className="flex flex-wrap items-center justify-center gap-2 mt-8 mb-4"
+                role="tablist"
+                aria-label="Select technical domain"
+                data-aos="fade-up"
+                data-aos-delay="100"
+              >
+                {EIGHT_DOMAINS_ITEMS.map((item, index) => {
+                  const isActive = activeDomainIndex === index;
+                  return (
+                    <button
+                      key={item.title}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => handleDomainSelect(index)}
+                      className={`inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? 'bg-[#b91c2c] text-white border-[#b91c2c] shadow-md scale-105'
+                          : 'bg-white/90 text-neutral-700 border-neutral-300 hover:border-[#b91c2c] hover:text-[#b91c2c]'
+                      }`}
+                    >
+                      <span className="font-mono opacity-80">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="hidden md:inline">{item.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Luminous, Visually Appealing Carousel Stage */}
+              <div
+                className="tracks-stage"
+                data-aos="zoom-in"
+                data-aos-duration="850"
+              >
+                <FlexCarousel
+                  ref={carouselRef}
+                  items={EIGHT_DOMAINS_ITEMS}
+                  preset="ribbon"
+                  intro="rise"
+                  cardHeight={0.65}
+                  gap={22}
+                  radius={24}
+                  fit="portrait"
+                  autoplay={false}
+                  captureWheel={false}
+                  showNavButtons={true}
+                  focusOnClick={true}
+                  captions={true}
+                  onChange={(index) => setActiveDomainIndex(index)}
+                />
+              </div>
+
+              {/* Active Domain Spotlight Showcase Card */}
+              <div
+                className="mt-6 p-6 md:p-8 rounded-2xl bg-white border border-neutral-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                data-aos="fade-up"
+                data-aos-delay="150"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#fdf2f2] text-[#b91c2c] border border-[#f5d0d0]">
+                      Track {String(activeDomainIndex + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                      Domain Spotlight · {activeDomainIndex + 1} of 08
+                    </span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight">
+                    {currentDomain.title}
+                  </h3>
+                  <p className="text-sm md:text-base text-neutral-600 max-w-3xl leading-relaxed">
+                    {currentDomain.description}
+                  </p>
+                  {currentDomain.tags && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {currentDomain.tags.map((tag) => (
+                        <span key={tag} className="text-xs px-2.5 py-1 rounded-md bg-neutral-100 text-neutral-600 font-medium">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => carouselRef.current?.prev()}
+                    className="px-4 py-2.5 text-xs font-semibold rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
+                  >
+                    ← Prev Track
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => carouselRef.current?.next()}
+                    className="px-4 py-2.5 text-xs font-semibold rounded-lg bg-[#b91c2c] text-white hover:bg-[#7f1420] transition-colors cursor-pointer"
+                  >
+                    Next Track →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 03 / Call for Papers */}
+          <section className="papers" id="papers">
+            <div className="papers-grid">
+              <div data-aos="fade-right">
+                <p className="eyebrow light">03 / Call for papers</p>
+                <h2>
+                  Bring Your Research
+                  <br />
+                  into the Conversation
+                </h2>
+              </div>
+              <div className="papers-copy" data-aos="fade-left" data-aos-delay="150">
+                <p>
+                  Original, unpublished research aligned with the conference tracks and interdisciplinary applications is invited. Submissions should demonstrate technical rigour, clear methodology, evidence and attention to reproducibility and practical or societal relevance.
+                </p>
+                <ul>
+                  <li>Proposed double-blind peer review</li>
+                  <li>Oral and poster presentation formats</li>
+                  <li>At least three independent reviewers proposed per paper</li>
+                </ul>
+                <button className="btn btn-light" type="button" disabled title="Official submission destination not yet supplied">
+                  Paper submission — link pending
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* 04 / Important Dates with Learn More Button */}
+          <section className="section dates" id="dates">
+            <SectionHead
+              eyebrow=""
+              title="A clear path to May 2027."
+              note="Official milestone timeline for paper submission, peer review, and conference proceedings. All dates are fixed as scheduled."
+            />
+            <div className="mt-12" data-aos="fade-up" data-aos-delay="100">
+              <HowItWorks features={conferenceDates} />
+            </div>
+
+            {/* Learn More Button for Dates */}
+            <div className="flex justify-center mt-12" data-aos="fade-up">
+              <button
+                type="button"
+                onClick={() => navigateTo('/dates')}
+                className="btn-learn-more"
+              >
+                <span>Learn More & Detailed Milestone Schedule</span>
+                <Arrow />
+              </button>
+            </div>
+          </section>
+
+          {/* 05 / Review */}
+          <section className="review">
+            <div className="review-grid">
+              <SectionHead eyebrow="" title="Publication & Review" />
+              <div className="review-cards" data-aos="fade-up" data-aos-delay="150">
+                <article>
+                  <span>01</span>
+                  <h3>Independent review</h3>
+                  <p>
+                    A double-blind process with at least three independent reviewers per paper is proposed, supported by track-chair and TPC review.
+                  </p>
+                </article>
+                <article>
+                  <span>02</span>
+                  <h3>Quality assurance</h3>
+                  <p>
+                    Technical quality control and plagiarism or similarity screening are proposed as part of the review process.
+                  </p>
+                </article>
+                <article className="publication">
+                  <span>Status note</span>
+                  <h3>IEEE approval is not confirmed</h3>
+                  <p>
+                    IEEE Maharashtra Section technical co-sponsorship has been requested. IEEE Xplore publication is intended, subject to approval and all applicable IEEE requirements.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          {/* 06 / Registration with Learn More Button */}
+          <section className="section registration" id="registration">
+            <SectionHead
+              eyebrow=""
+              title="Registration fees."
+              note="Fees are subject to revision. Taxes, bank charges and applicable additional-page charges will be announced separately."
+            />
+            <div className="fee-table" role="table" aria-label="Proposed registration fees" data-aos="fade-up" data-aos-delay="150">
+              <div className="fee-row fee-head" role="row">
+                <span role="columnheader">Category</span>
+                <span role="columnheader">IEEE member</span>
+                <span role="columnheader">Non-IEEE</span>
+              </div>
+              {fees.map(([category, member, nonMember], idx) => (
+                <div
+                  className="fee-row"
+                  role="row"
+                  key={category}
+                  data-aos="fade-up"
+                  data-aos-delay={String(50 * idx)}
+                >
+                  <strong role="cell">{category}</strong>
+                  <span role="cell" data-label="IEEE member">
+                    {member}
+                  </span>
+                  <span role="cell" data-label="Non-IEEE">
+                    {nonMember}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Learn More Action Box for Registration */}
+            <div
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8 p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm"
+              data-aos="fade-up"
+            >
+              <div>
+                <h4 className="font-bold text-neutral-900 text-base">Want complete registration and policy details?</h4>
+                <p className="text-xs md:text-sm text-neutral-600 mt-0.5">
+                  Explore author privileges, presentation policies, IEEE member discount verification, and terms.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigateTo('/registration')}
+                className="btn-learn-more whitespace-nowrap shrink-0"
+              >
+                <span>Learn More & Registration Guide</span>
+                <Arrow />
+              </button>
+            </div>
+          </section>
+
+          {/* 08 / Industry engagement */}
+          <section className="engagement">
+            <div className="engagement-grid">
+              <SectionHead eyebrow="" title="From research insight to real-world impact." />
+              <div className="engagement-list" data-aos="fade-up" data-aos-delay="150">
+                {[
+                  'Technology demonstrations',
+                  'Research collaboration',
+                  'Exhibitions',
+                  'Recruitment engagement',
+                  'Industry & CSR engagement',
+                  'Academic–industry interaction',
+                ].map((item, index) => (
+                  <div key={item} data-aos="fade-up" data-aos-delay={String(index * 50)}>
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    {item}
+                  </div>
+                ))}
+                <p>These are proposed opportunities and do not represent confirmed arrangements.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* 09 / Venue */}
+          <section className="venue" id="contact">
+            <div className="venue-image" data-aos="zoom-in" data-aos-duration="900">
+              <img src="/banner.webp" alt="Contemporary university buildings surrounded by green landscape" loading="lazy" />
+            </div>
+            <div className="venue-copy" data-aos="fade-left" data-aos-delay="200">
+              <p className="eyebrow">09 / Host & venue</p>
+              <h2>
+                Meet in Pune.
+                <br />
+                Think globally.
+              </h2>
               <p>
-                Where disciplines converge.
-                <br />
-                Where ideas become innovation.
+                Hosted by PCET’s Pimpri Chinchwad University, a university environment shaped for interdisciplinary learning, research and industry connection.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Glance */}
-        <section className="glance" aria-label="Conference at a glance">
-          <div className="glance-inner">
-            <p className="glance-lead" data-aos="fade-right">
-              A global forum for rigorous research and practical innovation.
-            </p>
-            <div data-aos="fade-up" data-aos-delay="100">
-              <strong>08</strong>
-              <span>
-                Proposed
+              <address>
+                Pimpri Chinchwad University
                 <br />
-                technical tracks
-              </span>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="200">
-              <strong>500</strong>
-              <span>
-                Target full-paper
+                Sate, Taluka Maval, District Pune
                 <br />
-                submissions
-              </span>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="300">
-              <strong>100–120</strong>
-              <span>
-                Target final
-                <br />
-                acceptances
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* 01 / About */}
-        <section className="section about" id="about">
-          <div className="editorial-grid">
-            <SectionHead eyebrow="01 / The conference" title="Research without boundaries." />
-            <div className="about-copy" data-aos="fade-left" data-aos-delay="150">
-              <p className="lede">
-                IM3-2027 brings researchers, educators and industry together to explore the space where disciplines meet—and where rigorous ideas become useful innovation.
-              </p>
-              <div className="two-col-copy">
-                <p>
-                  Hosted by PCET’s Pimpri Chinchwad University, the conference is conceived as an international platform for multidisciplinary research, peer exchange and meaningful academia–industry engagement.
-                </p>
-                <p>
-                  The proposed programme combines reviewed oral presentations, poster sessions and collaboration opportunities, with an emphasis on clear methodology, evidence and societal relevance.
-                </p>
-              </div>
-              <a className="text-link" href="#papers">
-                <span>Read the call for papers</span>
+                Maharashtra 412206, India
+              </address>
+              <a
+                className="text-link"
+                href="https://www.google.com/maps/search/?api=1&query=Pimpri+Chinchwad+University+Sate+Maval+Pune+Maharashtra+412206"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>Get directions</span>
                 <Arrow />
               </a>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
+      )}
 
-        {/* 02 / Eight Domains - Visually Stunning Flex Carousel */}
-        <section className="section tracks" id="tracks">
-          <div className="max-w-[1240px] mx-auto">
-            <SectionHead
-              eyebrow="02 / Technical Tracks · Call for papers"
-              title="Eight domains. One shared frontier."
-              note="Explore the eight technical tracks for IM3-2027. Use the previous / next buttons or click any domain tab below to inspect the track cards."
-            />
-
-            {/* Domain Quick-Select Indicator Bar */}
-            <div
-              className="flex flex-wrap items-center justify-center gap-2 mt-8 mb-4"
-              role="tablist"
-              aria-label="Select technical domain"
-              data-aos="fade-up"
-              data-aos-delay="100"
-            >
-              {EIGHT_DOMAINS_ITEMS.map((item, index) => {
-                const isActive = activeDomainIndex === index;
-                return (
-                  <button
-                    key={item.title}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => handleDomainSelect(index)}
-                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'bg-[#b91c2c] text-white border-[#b91c2c] shadow-md scale-105'
-                        : 'bg-white/90 text-neutral-700 border-neutral-300 hover:border-[#b91c2c] hover:text-[#b91c2c]'
-                    }`}
-                  >
-                    <span className="font-mono opacity-80">{String(index + 1).padStart(2, '0')}</span>
-                    <span className="hidden md:inline">{item.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Luminous, Visually Appealing Carousel Stage */}
-            <div
-              className="tracks-stage"
-              data-aos="zoom-in"
-              data-aos-duration="850"
-            >
-              <FlexCarousel
-                ref={carouselRef}
-                items={EIGHT_DOMAINS_ITEMS}
-                preset="ribbon"
-                intro="rise"
-                cardHeight={0.65}
-                gap={22}
-                radius={24}
-                fit="portrait"
-                autoplay={false}
-                captureWheel={false}
-                showNavButtons={true}
-                focusOnClick={true}
-                captions={true}
-                onChange={(index) => setActiveDomainIndex(index)}
-              />
-            </div>
-
-            {/* Active Domain Spotlight Showcase Card */}
-            <div
-              className="mt-6 p-6 md:p-8 rounded-2xl bg-white border border-neutral-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
-              data-aos="fade-up"
-              data-aos-delay="150"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#fdf2f2] text-[#b91c2c] border border-[#f5d0d0]">
-                    Track {String(activeDomainIndex + 1).padStart(2, '0')}
-                  </span>
-                  <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-                    Domain Spotlight · {activeDomainIndex + 1} of 08
-                  </span>
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight">
-                  {currentDomain.title}
-                </h3>
-                <p className="text-sm md:text-base text-neutral-600 max-w-3xl leading-relaxed">
-                  {currentDomain.description}
-                </p>
-                {currentDomain.tags && (
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {currentDomain.tags.map((tag) => (
-                      <span key={tag} className="text-xs px-2.5 py-1 rounded-md bg-neutral-100 text-neutral-600 font-medium">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => carouselRef.current?.prev()}
-                  className="px-4 py-2.5 text-xs font-semibold rounded-lg border border-neutral-300 text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
-                >
-                  ← Prev Track
-                </button>
-                <button
-                  type="button"
-                  onClick={() => carouselRef.current?.next()}
-                  className="px-4 py-2.5 text-xs font-semibold rounded-lg bg-[#b91c2c] text-white hover:bg-[#7f1420] transition-colors cursor-pointer"
-                >
-                  Next Track →
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 03 / Call for Papers */}
-        <section className="papers" id="papers">
-          <div className="papers-grid">
-            <div data-aos="fade-right">
-              <p className="eyebrow light">03 / Call for papers</p>
-              <h2>
-                Bring your research
-                <br />
-                into the conversation.
-              </h2>
-            </div>
-            <div className="papers-copy" data-aos="fade-left" data-aos-delay="150">
-              <p>
-                Original, unpublished research aligned with the conference tracks and interdisciplinary applications is invited. Submissions should demonstrate technical rigour, clear methodology, evidence and attention to reproducibility and practical or societal relevance.
-              </p>
-              <ul>
-                <li>Proposed double-blind peer review</li>
-                <li>Oral and poster presentation formats</li>
-                <li>At least three independent reviewers proposed per paper</li>
-              </ul>
-              <button className="btn btn-light" type="button" disabled title="Official submission destination not yet supplied">
-                Paper submission — link pending
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* 04 / Important Dates - Professional How-It-Works Timeline */}
-        <section className="section dates" id="dates">
-          <SectionHead
-            eyebrow="04 / Important dates"
-            title="A clear path to May 2027."
-            note="Official milestone timeline for paper submission, peer review, and conference proceedings. All dates are fixed as scheduled."
-          />
-          <div className="mt-12" data-aos="fade-up" data-aos-delay="100">
-            <HowItWorks features={conferenceDates} />
-          </div>
-        </section>
-
-        {/* 05 / Review */}
-        <section className="review">
-          <div className="review-grid">
-            <SectionHead eyebrow="05 / Publication & review" title="Quality, made transparent." />
-            <div className="review-cards" data-aos="fade-up" data-aos-delay="150">
-              <article>
-                <span>01</span>
-                <h3>Independent review</h3>
-                <p>
-                  A double-blind process with at least three independent reviewers per paper is proposed, supported by track-chair and TPC review.
-                </p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>Quality assurance</h3>
-                <p>
-                  Technical quality control and plagiarism or similarity screening are proposed as part of the review process.
-                </p>
-              </article>
-              <article className="publication">
-                <span>Status note</span>
-                <h3>IEEE approval is not confirmed</h3>
-                <p>
-                  IEEE Maharashtra Section technical co-sponsorship has been requested. IEEE Xplore publication is intended, subject to approval and all applicable IEEE requirements.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* 06 / Registration */}
-        <section className="section registration" id="registration">
-          <SectionHead
-            eyebrow="06 / Registration"
-            title="Proposed registration fees."
-            note="Fees are subject to revision. Taxes, bank charges and applicable additional-page charges will be announced separately."
-          />
-          <div className="fee-table" role="table" aria-label="Proposed registration fees" data-aos="fade-up" data-aos-delay="150">
-            <div className="fee-row fee-head" role="row">
-              <span role="columnheader">Category</span>
-              <span role="columnheader">IEEE member</span>
-              <span role="columnheader">Non-IEEE</span>
-            </div>
-            {fees.map(([category, member, nonMember], idx) => (
-              <div
-                className="fee-row"
-                role="row"
-                key={category}
-                data-aos="fade-up"
-                data-aos-delay={String(50 * idx)}
-              >
-                <strong role="cell">{category}</strong>
-                <span role="cell" data-label="IEEE member">
-                  {member}
-                </span>
-                <span role="cell" data-label="Non-IEEE">
-                  {nonMember}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-{/* 07 / Committees */}
-<section className="section committees" id="committees">
-  <CommitteePage />
-</section>
-{/* Dedicated Advisory Committee Section */}
-<div id="advisory-committee" className="mt-14 pt-10 border-t border-neutral-200" data-aos="fade-up">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-              <div>
-                <p className="eyebrow">Academic & Scientific Governance</p>
-                <h3 className="text-2xl md:text-3xl font-bold font-display text-neutral-900 mt-1">
-                  Advisory Committee
-                </h3>
-              </div>
-              <p className="text-xs md:text-sm text-neutral-500 max-w-md">
-                Guiding academic rigour, track governance, and international peer engagement for IM3-2027.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm hover:border-[#b91c2c]/40 transition-all hover:shadow-md">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
-                    National Board
-                  </span>
-                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
-                </div>
-                <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">National Advisory Committee</h4>
-                <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
-                  Distinguished professors, senior IEEE members, research council directors, and academicians from premier national institutes, IITs, NITs, and central universities across India.
-                </p>
-                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Distinguished National Academicians & Researchers</span>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm hover:border-[#b91c2c]/40 transition-all hover:shadow-md">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#b91c2c] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">
-                    International Board
-                  </span>
-                  <span className="text-xs font-semibold text-neutral-400">IM3-2027</span>
-                </div>
-                <h4 className="text-xl font-bold text-neutral-900 mb-2 font-display">International Advisory Committee</h4>
-                <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
-                  Renowned international scholars, IEEE Fellows, global university deans, and research leaders providing strategic insight and global peer review alignment.
-                </p>
-                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 pt-3 border-t border-neutral-100">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Global Research Pioneers & IEEE Fellows</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        
-
-        {/* 08 / Industry engagement */}
-        <section className="engagement">
-          <div className="engagement-grid">
-            <SectionHead eyebrow="08 / Industry engagement" title="From research insight to real-world impact." />
-            <div className="engagement-list" data-aos="fade-up" data-aos-delay="150">
-              {[
-                'Technology demonstrations',
-                'Research collaboration',
-                'Exhibitions',
-                'Recruitment engagement',
-                'Industry & CSR engagement',
-                'Academic–industry interaction',
-              ].map((item, index) => (
-                <div key={item} data-aos="fade-up" data-aos-delay={String(index * 50)}>
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  {item}
-                </div>
-              ))}
-              <p>These are proposed opportunities and do not represent confirmed arrangements.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* 09 / Venue */}
-        <section className="venue" id="contact">
-          <div className="venue-image" data-aos="zoom-in" data-aos-duration="900">
-            <img src="/banner.webp" alt="Contemporary university buildings surrounded by green landscape" loading="lazy" />
-          </div>
-          <div className="venue-copy" data-aos="fade-left" data-aos-delay="200">
-            <p className="eyebrow">09 / Host & venue</p>
-            <h2>
-              Meet in Pune.
-              <br />
-              Think globally.
-            </h2>
-            <p>
-              Hosted by PCET’s Pimpri Chinchwad University, a university environment shaped for interdisciplinary learning, research and industry connection.
-            </p>
-            <address>
-              Pimpri Chinchwad University
-              <br />
-              Sate, Taluka Maval, District Pune
-              <br />
-              Maharashtra 412206, India
-            </address>
-            <a
-              className="text-link"
-              href="https://www.google.com/maps/search/?api=1&query=Pimpri+Chinchwad+University+Sate+Maval+Pune+Maharashtra+412206"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span>Get directions</span>
-              <Arrow />
-            </a>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer with PCU Conference Logo on left & Specular Buttons for hyperlinking */}
-      <footer className="footer-container">
-        <div className="footer-inner">
-          <div className="footer-main-grid">
-            {/* Left side: PCU conference logo & branding */}
-            <div className="footer-left" data-aos="fade-right">
-              <a href="#top" className="footer-logo-card" aria-label="IM3-2027 home">
-                <img
-                  src="/pcu-conference-logo.png"
-                  alt="PCU Conference Logo - Pimpri Chinchwad University"
-                  className="footer-logo-image"
-                />
-              </a>
-              <h3 className="footer-tagline">
-                Where disciplines converge.
-                <br />
-                Where ideas become innovation.
-              </h3>
-              <p className="footer-host-info">
-                Hosted by PCET’s Pimpri Chinchwad University
-                <br />
-                Sate, Taluka Maval, Pune, Maharashtra 412206, India
-                <br />
-                <strong>Conference Dates: 6—8 May 2027</strong>
-              </p>
-            </div>
-
-            {/* Right side: Specular Buttons for hyperlinking */}
-            <div className="footer-right" data-aos="fade-left" data-aos-delay="150">
-              <div className="footer-cta-wrapper">
-                <p className="footer-cta-label">Featured Destination</p>
-                <SpecularButton
-                  href="https://pcupune.in/international-mastermind/"
-                  target="_blank"
-                  variant="featured"
-                  size="lg"
-                  radius={16}
-                  followMouse
-                  autoAnimate
-                >
-                  <span>Official Conference Website</span>
-                  <Arrow />
-                </SpecularButton>
-              </div>
-
-              <div className="footer-specular-nav">
-                <p className="footer-nav-label">Conference Navigation</p>
-                <div className="footer-buttons-group">
-                  <SpecularButton
-                    href="#tracks"
-                    size="sm"
-                    radius={12}
-                    followMouse
-                  >
-                    Call for Papers
-                  </SpecularButton>
-                  {nav.map(([label, id]) => (
-                    <SpecularButton
-                      key={id}
-                      href={`#${id}`}
-                      size="sm"
-                      radius={12}
-                      followMouse
-                    >
-                      {label}
-                    </SpecularButton>
-                  ))}
-                  <SpecularButton
-                  href="/committees"
-                  size="sm"
-                  radius={12}
-                  followMouse
-                >
-                  Committee
-                </SpecularButton>
-                  
-                  <SpecularButton
-                    href="https://www.google.com/maps/search/?api=1&query=Pimpri+Chinchwad+University+Sate+Maval+Pune+Maharashtra+412206"
-                    target="_blank"
-                    size="sm"
-                    radius={12}
-                    followMouse
-                  >
-                    <span>Directions</span>
-                    <Arrow />
-                  </SpecularButton>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div className="footer-bottom-bar" data-aos="fade-up" data-aos-delay="200">
-            <p>© 2027 International Master-Mind Meet (IM3-2027). All rights reserved.</p>
-            <p>PCET’s Pimpri Chinchwad University (PCU), Pune, India · Technical Co-Sponsorship Requested with IEEE Maharashtra Section</p>
-          </div>
-        </div>
-      </footer>
+      {/* Global Footer with PCU Conference Logo & Specular Buttons */}
+      <Footer currentRoute={currentRoute} navigateTo={navigateTo} />
     </div>
   );
 }

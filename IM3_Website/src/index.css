@@ -55,6 +55,50 @@ h1 em { color: var(--crimson); font-style: normal; }
 .btn-primary:hover { background: var(--burgundy); transform: translateY(-2px); }
 .btn-text { border-bottom-color: var(--ink); padding-inline: .2rem; gap: 1rem; }
 .btn-text:hover { color: var(--crimson); border-color: var(--crimson); }
+.btn-learn-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.4rem;
+  background: var(--crimson);
+  color: var(--white);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid #9e1624;
+  box-shadow: 0 4px 14px rgba(185, 28, 44, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-learn-more:hover {
+  background: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(185, 28, 44, 0.35);
+  color: var(--white);
+}
+.btn-learn-more-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.4rem;
+  background: var(--white);
+  color: var(--crimson);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1.5px solid var(--crimson);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-learn-more-outline:hover {
+  background: #fdf2f2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(185, 28, 44, 0.15);
+  color: var(--burgundy);
+}
 .hero-art { position: relative; min-height: 650px; }
 .convergence { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(circle at 50% 48%, var(--blush) 0 3%, transparent 25%), repeating-linear-gradient(90deg, transparent 0 69px, rgb(185 28 44 / 8%) 70px), repeating-linear-gradient(0deg, transparent 0 69px, rgb(185 28 44 / 8%) 70px); }
 .orbit { position: absolute; border: 1px solid rgb(185 28 44 / 45%); border-radius: 50%; left: 50%; top: 48%; transform: translate(-50%, -50%); animation: orbit-spin 32s linear infinite; }
