@@ -21,21 +21,41 @@ function getInitials(name: string): string {
 }
 
 function MemberCard({ member, index }: { member: AdvisoryMember; index: number }) {
+  const [imageError, setImageError] = useState(false);
   const initials = getInitials(member.name);
   const formattedIndex = String(index + 1).padStart(2, '0');
+
+  const showImage = Boolean(member.image && !imageError);
 
   return (
     <article
       className="advisory-card"
       aria-label={`${member.name}, ${member.designation ? member.designation + ', ' : ''}${member.institution}`}
     >
-      <div className="advisory-card-top">
-        <div className="advisory-monogram" aria-hidden="true">
-          {initials}
-        </div>
+      <div className="advisory-card-header">
         <span className="advisory-badge-pill" aria-label={`Index ${formattedIndex}`}>
           #{formattedIndex}
         </span>
+      </div>
+
+      <div className="advisory-card-top">
+        <div
+          className="advisory-monogram"
+          style={showImage ? { overflow: 'hidden' } : undefined}
+          aria-hidden={!showImage ? 'true' : undefined}
+        >
+          {showImage ? (
+            <img
+              src={member.image}
+              alt={`Portrait of ${member.name}`}
+              className="advisory-portrait-img"
+              loading="lazy"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            initials
+          )}
+        </div>
       </div>
 
       <div className="advisory-card-content">

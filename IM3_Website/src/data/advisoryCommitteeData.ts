@@ -18,6 +18,7 @@ export interface AdvisoryMember {
   institution: string;
   location?: string;
   category: 'national' | 'international';
+  image?: string;
 }
 
 export const PROVISIONAL_STATUS_NOTICE = {
@@ -34,6 +35,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Indore',
     location: 'Indore, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Suhas_Joshi.webp',
   },
   {
     id: 'nat-02',
@@ -42,6 +44,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'NIT Warangal',
     location: 'Warangal, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Shirish_Sonavane.webp',
   },
   {
     id: 'nat-03',
@@ -50,6 +53,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Nano-Centre, Chandigarh',
     location: 'Chandigarh, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Amitva_Patra.webp',
   },
   {
     id: 'nat-04',
@@ -66,6 +70,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Chennai',
     location: 'Chennai, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_M_S_Rao.webp',
   },
   {
     id: 'nat-06',
@@ -74,6 +79,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Delhi',
     location: 'New Delhi, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Mahesh_Abegaokar.webp',
   },
   {
     id: 'nat-07',
@@ -82,6 +88,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Roorkee',
     location: 'Roorkee, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Sujay_Chatoppadhyay.webp',
   },
   {
     id: 'nat-08',
@@ -89,6 +96,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IISc Bangalore',
     location: 'Bengaluru, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Anil_Kumar.webp',
   },
   {
     id: 'nat-09',
@@ -97,6 +105,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Delhi',
     location: 'New Delhi, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_S_D_Joshi.webp',
   },
   {
     id: 'nat-10',
@@ -105,6 +114,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Roorkee',
     location: 'Roorkee, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_T_RaviChandran.webp',
   },
   {
     id: 'nat-11',
@@ -113,6 +123,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IISc Bangalore',
     location: 'Bengaluru, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Sachin_Rondhiya.webp',
   },
   {
     id: 'nat-12',
@@ -121,6 +132,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'ISRO SAC, Ahmedabad',
     location: 'Ahmedabad, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Ravi_Kumar_Varma.webp',
   },
   {
     id: 'nat-13',
@@ -129,6 +141,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'CMET, Pune',
     location: 'Pune, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Ratheesh.webp',
   },
   {
     id: 'nat-14',
@@ -145,6 +158,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIIT Allahabad',
     location: 'Prayagraj, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Mukul_Sutaone.webp',
   },
   {
     id: 'nat-16',
@@ -153,6 +167,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'NIT Surat',
     location: 'Surat, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_S_K_Shukla.webp',
   },
   {
     id: 'nat-17',
@@ -161,6 +176,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIIT Pune',
     location: 'Pune, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Vineet_Kansal.webp',
   },
   {
     id: 'nat-18',
@@ -169,6 +185,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'IIT Chennai',
     location: 'Chennai, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_S_R_Mahadeva_Prasanna.webp',
   },
   {
     id: 'nat-19',
@@ -176,6 +193,7 @@ export const nationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Central University, Jammu',
     location: 'Jammu, India',
     category: 'national',
+    image: '/Advisory_Committee/National/Dr_Suresh_Limkar.webp',
   },
 ];
 
@@ -187,6 +205,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Curtin University',
     location: 'Australia',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Vidyasagar_Potdar.webp',
   },
   {
     id: 'intl-02',
@@ -195,6 +214,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Universiti Teknikal Malaysia Melaka (UTeM)',
     location: 'Malaysia',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Jamil_Abedalrahim_Jamil_Alsayaydeh.webp',
   },
   {
     id: 'intl-03',
@@ -203,6 +223,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Landmark Group',
     location: 'Dubai, United Arab Emirates',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Amit_Kore.webp',
   },
   {
     id: 'intl-04',
@@ -211,6 +232,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Purdue University',
     location: 'United States of America',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Vilas_Pol.webp',
   },
   {
     id: 'intl-05',
@@ -219,6 +241,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Microlin',
     location: 'United States of America',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Ashok_Joshi.webp',
   },
   {
     id: 'intl-06',
@@ -227,6 +250,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Russian Centre of Sciences',
     location: 'Russia',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Victor_Gorelykh.webp',
   },
   {
     id: 'intl-07',
@@ -235,6 +259,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of Cologne',
     location: 'Germany',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Sanjay_Mathur.webp',
   },
   {
     id: 'intl-08',
@@ -242,6 +267,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'Affiliation under reconfirmation',
     location: 'Sweden',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Alminica_AB.webp',
   },
   {
     id: 'intl-09',
@@ -250,6 +276,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of Surrey, Guildford',
     location: 'United Kingdom',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Satheesh_Krishnamurthy.webp',
   },
   {
     id: 'intl-10',
@@ -258,6 +285,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of Nottingham',
     location: 'United Kingdom',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Nigel_Minton.webp',
   },
   {
     id: 'intl-11',
@@ -265,6 +293,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of West London',
     location: 'United Kingdom',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Campos.webp',
   },
   {
     id: 'intl-12',
@@ -272,6 +301,7 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of Leeds',
     location: 'United Kingdom',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Animesh_Jha.webp',
   },
   {
     id: 'intl-13',
@@ -279,6 +309,6 @@ export const internationalAdvisoryCommittee: AdvisoryMember[] = [
     institution: 'University of Utah',
     location: 'United States of America',
     category: 'international',
+    image: '/Advisory_Committee/International/Dr_Ashutosh_Tiwari.webp',
   },
 ];
-
