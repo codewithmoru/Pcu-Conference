@@ -262,7 +262,7 @@ export default function App() {
   const currentDomain = EIGHT_DOMAINS_ITEMS[activeDomainIndex] || EIGHT_DOMAINS_ITEMS[0];
 
   return (
-    <div id="top" className="min-h-screen flex flex-col justify-between">
+    <div id="top" className="min-h-screen flex flex-col justify-between w-full max-w-full overflow-x-hidden">
       <a className="skip-link" href="#main">
         Skip to content
       </a>

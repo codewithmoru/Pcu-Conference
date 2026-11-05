@@ -211,7 +211,7 @@ export default function HowItWorks({
   return (
     <LazyMotion features={domAnimation}>
       <div
-        className={`bg-neutral-50/60 dark:bg-black max-md:py-10 md:py-16 px-4 md:px-8 relative rounded-3xl border border-neutral-200/80 dark:border-neutral-800 ${className}`}
+        className={`bg-neutral-50/60 dark:bg-black max-md:py-10 md:py-16 px-4 md:px-8 relative rounded-3xl border border-neutral-200/80 dark:border-neutral-800 overflow-hidden ${className}`}
       >
         {/* Subtle grid background */}
         <div

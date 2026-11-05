@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useImperativeHandle, forwardRef, type CSSProperties } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef, type CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import './FlexCarousel.css';
 
@@ -115,7 +115,21 @@ const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function Fle
   ref
 ) {
   const [active, setActive] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   const count = items.length;
+  const isMobile = viewportWidth < 640;
+  const isTablet = viewportWidth < 1024;
+  const immediateOffset = isMobile ? 180 : isTablet ? 260 : 330;
+  const secondaryOffset = isMobile ? 320 : isTablet ? 460 : 590;
 
   const handleNext = () => {
     const nextIdx = (active + 1) % count;
@@ -162,7 +176,7 @@ const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function Fle
           const isCenter = diff === 0;
           const isImmediate = Math.abs(diff) === 1;
           const isSecondary = Math.abs(diff) === 2;
-          const isVisible = Math.abs(diff) <= 2;
+          const isVisible = isMobile ? Math.abs(diff) <= 1 : Math.abs(diff) <= 2;
 
           // 3D positioning parameters
           let translateX = 0;
@@ -180,21 +194,21 @@ const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function Fle
             opacity = 1;
             zIndex = 20;
           } else if (isImmediate) {
-            translateX = diff > 0 ? 330 : -330;
-            translateZ = -90;
+            translateX = diff > 0 ? immediateOffset : -immediateOffset;
+            translateZ = isMobile ? -60 : -90;
             rotateY = diff > 0 ? -12 : 12;
-            scale = 0.88;
+            scale = isMobile ? 0.84 : 0.88;
             opacity = 0.78;
             zIndex = 10;
           } else if (isSecondary) {
-            translateX = diff > 0 ? 590 : -590;
+            translateX = diff > 0 ? secondaryOffset : -secondaryOffset;
             translateZ = -200;
             rotateY = diff > 0 ? -22 : 22;
             scale = 0.74;
             opacity = 0.35;
             zIndex = 5;
           } else {
-            translateX = diff > 0 ? 800 : -800;
+            translateX = diff > 0 ? (secondaryOffset + 180) : -(secondaryOffset + 180);
             translateZ = -300;
             rotateY = diff > 0 ? -30 : 30;
             scale = 0.6;
