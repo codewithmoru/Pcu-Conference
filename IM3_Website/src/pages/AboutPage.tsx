@@ -89,7 +89,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
         <div className="max-w-[1240px] mx-auto px-6 md:px-12 relative z-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#fef2f2] text-[#b91c2c] border border-[#fecaca] mb-6">
-              <span>About IM3-2027</span>
+              <span>About IEEE IM3-2027</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#b91c2c]" />
               <span>Host University & Partners</span>
             </div>
@@ -98,7 +98,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
               <span className="text-[#b91c2c]">Where ideas become impact.</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-600 leading-relaxed font-normal">
-              IM3-2027 is a selective international conference hosted by PCET’s Pimpri Chinchwad University, Pune, bringing together world-class researchers, engineers, educators, and industry pioneers to solve challenges at the convergence of technology, materials, and society.
+              IEEE IM3-2027 is a selective international conference hosted by PCET’s Pimpri Chinchwad University, Pune, bringing together world-class researchers, engineers, educators, and industry pioneers to solve challenges at the convergence of technology, materials, and society.
             </p>
           </div>
 
@@ -186,7 +186,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
               Building on the International Mastermind Meet
             </h2>
             <p className="text-neutral-700 leading-relaxed mb-6">
-              IM3-2027 builds on the International Mastermind Meet platform established through IM3-2026, advancing it into a rigorous, selective multidisciplinary international conference connecting sciences, engineering, healthcare, agriculture, digital trust, and societal policy.
+              IEEE IM3-2027 builds on the International Mastermind Meet platform established through IM3-2026, advancing it into a rigorous, selective multidisciplinary international conference connecting sciences, engineering, healthcare, agriculture, digital trust, and societal policy.
             </p>
             <p className="text-neutral-700 leading-relaxed mb-8">
               The 2026 edition convened a global forum at PCU with distinguished academicians, scientists, and researchers representing ten nations worldwide:
@@ -228,7 +228,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
               Institutional & Knowledge Partners
             </h2>
             <p className="text-neutral-600 text-sm md:text-base">
-              IM3-2027 is strengthened through formal partnerships with premier agricultural and scientific organizations, enriching conference tracks with deep scientific governance.
+              IEEE IM3-2027 is strengthened through formal partnerships with premier agricultural and scientific organizations, enriching conference tracks with deep scientific governance.
             </p>
           </div>
 
@@ -291,7 +291,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
               Core Principles
             </span>
             <h2 className="text-2xl md:text-4xl font-bold font-display text-white tracking-tight mt-2 mb-4">
-              Why IM3-2027
+              Why IEEE IM3-2027
             </h2>
             <p className="text-neutral-300 text-sm md:text-base">
               Conceived as a premier scientific forum that prioritizes verifiable academic rigour, evidence, reproducible methodology, and real-world societal translation.
@@ -321,7 +321,7 @@ export default function AboutPage({ navigateTo }: AboutPageProps) {
         {/* CTA Bar to Next Steps */}
         <section className="p-8 md:p-12 rounded-3xl bg-white border border-neutral-200 text-center space-y-6">
           <h2 className="text-2xl md:text-3xl font-bold font-display text-neutral-900">
-            Ready to participate in IM3-2027?
+            Ready to participate in IEEE IM3-2027?
           </h2>
           <p className="text-neutral-600 max-w-xl mx-auto text-sm md:text-base">
             Check the official submission timelines, explore the eight technical tracks, or inspect the registration fee schedule.

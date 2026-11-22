@@ -17,7 +17,7 @@ export default function CommitteePage() {
     <>
       <header className="site-header">
         <div className="nav-shell">
-          <a className="brand" href="/#top" aria-label="IM3-2027 home">
+          <a className="brand" href="/#top" aria-label="IEEE IM3-2027 home">
             <img src="/logo2.webp" alt="Pimpri Chinchwad University" />
           </a>
 

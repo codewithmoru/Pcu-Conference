@@ -57,7 +57,7 @@ const conferenceDates: Step[] = [
     colorTheme: 'blue',
   },
   {
-    title: 'IM3-2027 Conference',
+    title: 'IEEE IM3-2027 Conference',
     description: 'Three days of groundbreaking multidisciplinary paper presentations, workshops, and industry networking at PCU Pune.',
     dateBadge: '06–08 MAY',
     year: '2027',
@@ -130,6 +130,7 @@ function ConvergenceGraphic() {
       <div className="axis axis-x" />
       <div className="axis axis-y" />
       <h1 className="core-title" id="hero-title">
+        <span>IEEE</span>
         <span>International</span>
         <strong>Master-Mind</strong>
         <em>Meet 2027</em>
@@ -343,7 +344,7 @@ export default function App() {
               <SectionHead eyebrow="" title="About The Conference" />
               <div className="about-copy" data-aos="fade-left" data-aos-delay="150">
                 <p className="lede">
-                  IM3-2027 brings researchers, educators and industry together to explore the space where disciplines meet—and where rigorous ideas become useful innovation.
+                  IEEE IM3-2027 brings researchers, educators and industry together to explore the space where disciplines meet—and where rigorous ideas become useful innovation.
                 </p>
                 <div className="two-col-copy">
                   <p>
@@ -361,7 +362,7 @@ export default function App() {
                     onClick={() => navigateTo('/about')}
                     className="btn-learn-more"
                   >
-                    <span>Learn More About IM3-2027 & PCU</span>
+                    <span>Learn More About IEEE IM3-2027 & PCU</span>
                     <Arrow />
                   </button>
                   <a className="text-link" href="#tracks">
@@ -379,7 +380,7 @@ export default function App() {
               <SectionHead
                 eyebrow=""
                 title="Technical Tracks"
-                note="Explore the eight technical tracks for IM3-2027. Use the previous / next buttons or click any domain tab below to inspect the track cards."
+                note="Explore the eight technical tracks for IEEE IM3-2027. Use the previous / next buttons or click any domain tab below to inspect the track cards."
               />
 
               {/* Domain Quick-Select Indicator Bar */}

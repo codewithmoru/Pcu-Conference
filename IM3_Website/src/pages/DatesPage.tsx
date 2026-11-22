@@ -98,7 +98,7 @@ export default function DatesPage({ navigateTo }: DatesPageProps) {
       dateBadge: '06–08',
       month: 'MAY',
       year: '2027',
-      title: 'IM3-2027 Conference Days',
+      title: 'IEEE IM3-2027 Conference Days',
       phase: 'Phase 4 · Conference Days',
       description:
         'Three days of groundbreaking multidisciplinary paper presentations, workshops, exhibitions, and industry networking at PCU Pune.',
@@ -273,7 +273,7 @@ export default function DatesPage({ navigateTo }: DatesPageProps) {
         {/* CTA Bar */}
         <section className="p-8 md:p-12 rounded-3xl bg-neutral-900 text-white text-center space-y-6">
           <h2 className="text-2xl md:text-3xl font-bold font-display">
-            Plan your IM3-2027 submission
+            Plan your IEEE IM3-2027 submission
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto text-sm md:text-base">
             Review the registration fee categories or explore the eight technical tracks to select your primary domain.

@@ -314,7 +314,7 @@ const FlexCarousel = forwardRef<FlexCarouselRef, FlexCarouselProps>(function Fle
 
                 {/* Card Footer */}
                 <div className="depth-card__footer">
-                  <span className="depth-card__brand">IM3-2027 · PCU PUNE</span>
+                  <span className="depth-card__brand">IEEE IM3-2027 · PCU PUNE</span>
                   <div
                     className="depth-card__btn-arrow"
                     style={{ background: isCenter ? accent.iconBg : '#e4e4e7' }}

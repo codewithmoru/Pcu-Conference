@@ -68,7 +68,7 @@ export default function RegistrationPage({ navigateTo }: RegistrationPageProps) 
     {
       icon: '🎒',
       title: 'Conference Kit & Badge',
-      desc: 'Official IM3-2027 conference delegate kit, proceedings compendium, badge, and documentation.',
+      desc: 'Official IEEE IM3-2027 conference delegate kit, proceedings compendium, badge, and documentation.',
     },
     {
       icon: '☕',
@@ -109,7 +109,7 @@ export default function RegistrationPage({ navigateTo }: RegistrationPageProps) 
               <span className="text-[#b91c2c]">Fees & Policy.</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-600 leading-relaxed font-normal">
-              Clear, transparent pricing structure for authors, academicians, students, and industry delegates participating in IM3-2027 at PCET’s Pimpri Chinchwad University.
+              Clear, transparent pricing structure for authors, academicians, students, and industry delegates participating in IEEE IM3-2027 at PCET’s Pimpri Chinchwad University.
             </p>
           </div>
 
@@ -285,7 +285,7 @@ export default function RegistrationPage({ navigateTo }: RegistrationPageProps) 
         {/* Bottom CTA */}
         <section className="p-8 md:p-12 rounded-3xl bg-neutral-900 text-white text-center space-y-6">
           <h2 className="text-2xl md:text-3xl font-bold font-display">
-            Need more information about IM3-2027?
+            Need more information about IEEE IM3-2027?
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto text-sm md:text-base">
             Check the important milestones timeline or review the conference committees and academic leadership.

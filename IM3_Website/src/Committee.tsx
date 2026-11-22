@@ -107,7 +107,7 @@ export default function CommitteePage() {
       <div className="committee-container">
         <section className="committee-hero">
           <p className="committee-eyebrow">
-            IM3-2027 <span>/</span> ACADEMIC LEADERSHIP
+            IEEE IM3-2027 <span>/</span> ACADEMIC LEADERSHIP
           </p>
 
           <h1>
@@ -120,7 +120,7 @@ export default function CommitteePage() {
             The distinguished national and international leaders, researchers,
             and professionals listed below support the conference’s academic
             direction, technical excellence, and organization, helping ensure
-            a rigorous and successful IM3-2027.
+            a rigorous and successful IEEE IM3-2027.
           </p>
 
           <div className="committee-meta">
@@ -160,7 +160,7 @@ export default function CommitteePage() {
         </div>
 
         <section className="committee-group">
-          <p className="committee-eyebrow">IM3-2027 / COMMITTEE</p>
+          <p className="committee-eyebrow">IEEE IM3-2027 / COMMITTEE</p>
           <h2>{activeGroup.title}</h2>
           <p className="committee-description">
             Distinguished leaders and members supporting the conference.

@@ -40,7 +40,7 @@ export default function Footer({ currentRoute, navigateTo }: FooterProps) {
                 e.preventDefault();
                 navigateTo('/');
               }}
-              aria-label="IM3-2027 home"
+              aria-label="IEEE IM3-2027 home"
             >
               <img
                 src="/pcu-conference-logo.png"
@@ -175,7 +175,7 @@ export default function Footer({ currentRoute, navigateTo }: FooterProps) {
         </div>
 
         <div className="footer-bottom-bar">
-          <p>© 2027 International Master-Mind Meet (IM3-2027). All rights reserved.</p>
+          <p>© 2027 IEEE International Master-Mind Meet (IEEE IM3-2027). All rights reserved.</p>
           <p>
             PCET’s Pimpri Chinchwad University (PCU), Pune, India · Technical Co-Sponsorship Requested with IEEE Maharashtra Section
           </p>

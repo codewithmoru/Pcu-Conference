@@ -49,7 +49,7 @@ export default function Navbar({ currentRoute, navigateTo }: NavbarProps) {
             e.preventDefault();
             navigateTo('/');
           }}
-          aria-label="IM3-2027 home"
+          aria-label="IEEE IM3-2027 home"
         >
           <img src="/logo2.webp" alt="Pimpri Chinchwad University" />
         </a>

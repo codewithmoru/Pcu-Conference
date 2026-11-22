@@ -104,7 +104,7 @@ export default function AdvisoryCommitteePage({ navigateTo }: AdvisoryCommitteeP
                 navigateTo('/');
               }}
             >
-              IM3-2027
+              IEEE IM3-2027
             </a>
             <span className="crumb-separator" aria-hidden="true">/</span>
             <span className="crumb-current">Academic Leadership</span>
@@ -115,7 +115,7 @@ export default function AdvisoryCommitteePage({ navigateTo }: AdvisoryCommitteeP
           </h1>
 
           <p className="advisory-lead">
-            The National and International Advisory Committees support the conference’s academic direction, track governance, and multidisciplinary research engagement to ensure rigorous international standards for IM3-2027.
+            The National and International Advisory Committees support the conference’s academic direction, track governance, and multidisciplinary research engagement to ensure rigorous international standards for IEEE IM3-2027.
           </p>
 
           <div className="advisory-meta-grid" role="region" aria-label="Conference Event Metadata">
@@ -215,7 +215,7 @@ export default function AdvisoryCommitteePage({ navigateTo }: AdvisoryCommitteeP
         {/* Cross-navigation banner to Homepage Tracks */}
         <section className="advisory-cross-nav" aria-label="Conference Exploration">
           <div className="advisory-cross-copy">
-            <h3>Explore IM3-2027 Conference Tracks</h3>
+            <h3>Explore IEEE IM3-2027 Conference Tracks</h3>
             <p>Eight multidisciplinary domains convening research from science, engineering, health, and society.</p>
           </div>
           <div className="advisory-cross-actions">

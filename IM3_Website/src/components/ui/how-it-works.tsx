@@ -188,7 +188,7 @@ export default function HowItWorks({
       colorTheme: "blue",
     },
     {
-      title: "IM3-2027 Conference",
+      title: "IEEE IM3-2027 Conference",
       description: "Three immersive days of multidisciplinary discourse, research, and industry engagement at PCU Pune.",
       dateBadge: "06–08 MAY",
       year: "2027",

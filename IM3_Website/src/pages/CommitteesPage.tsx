@@ -385,14 +385,14 @@ export default function CommitteesPage({ navigateTo }: CommitteesPageProps) {
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#fef2f2] text-[#b91c2c] border border-[#fecaca] mb-6">
               <span>Governance & Leadership</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#b91c2c]" />
-              <span>IM3-2027</span>
+              <span>IEEE IM3-2027</span>
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-neutral-950 leading-[1.1] mb-6">
               Leadership & <br />
               <span className="text-[#b91c2c]">Organizing Committee.</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-600 leading-relaxed font-normal">
-              The distinguished academic patrons, executive leaders, and organizing committee chairs directing the conference execution, technical program, and publication quality for IM3-2027.
+              The distinguished academic patrons, executive leaders, and organizing committee chairs directing the conference execution, technical program, and publication quality for IEEE IM3-2027.
             </p>
           </div>
 
@@ -496,7 +496,7 @@ export default function CommitteesPage({ navigateTo }: CommitteesPageProps) {
                           {initials}
                         </div>
                         <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                          IM3-2027 Leadership
+                          IEEE IM3-2027 Leadership
                         </span>
                       </div>
                     )}
@@ -557,7 +557,7 @@ export default function CommitteesPage({ navigateTo }: CommitteesPageProps) {
         {/* Bottom Navigation CTA */}
         <section className="p-8 md:p-12 rounded-3xl bg-white border border-neutral-200 text-center space-y-6 mt-16">
           <h2 className="text-2xl md:text-3xl font-bold font-display text-neutral-900">
-            Connect with IM3-2027 Leadership
+            Connect with IEEE IM3-2027 Leadership
           </h2>
           <p className="text-neutral-600 max-w-xl mx-auto text-sm md:text-base">
             For academic inquiries, track proposals, or sponsorship partnerships, please reach out to the organizing secretariat.
